@@ -14,7 +14,11 @@ pip install -r requirements.txt
 echo "📁 Collecting static files..."
 python manage.py collectstatic --noinput
 
-# Run production setup (migrations, superuser, demo data)
+# Run migrations first
+echo "🗄️ Running database migrations..."
+python manage.py migrate --noinput
+
+# Create superuser and demo data
 echo "🔧 Setting up production environment..."
 python manage.py setup_production
 

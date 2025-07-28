@@ -29,11 +29,11 @@
 
 ### Render (100% FREE - Recommended)
 - [x] Create GitHub repository (✅ https://github.com/Elabs-llc/edufeedback-system.git)
-- [ ] Create Render account (free)
-- [ ] Create PostgreSQL database (free)
-- [ ] Create web service (free)
-- [ ] Set environment variables
-- [ ] Deploy and test
+- [x] Create Render account (free) ✅
+- [x] ~~Create PostgreSQL database~~ (using SQLite instead) ✅
+- [x] Create web service (free) ✅
+- [x] Set environment variables ✅
+- [x] Deploy and test ✅ **LIVE: https://edufeedback-system.onrender.com**
 
 ### PythonAnywhere (100% FREE)
 - [ ] Create PythonAnywhere account

@@ -18,21 +18,19 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS('✅ Database connection successful'))
         except Exception as e:
             self.stdout.write(self.style.ERROR(f'❌ Database connection failed: {e}'))
-            return
-        
-        # Run migrations
-        self.stdout.write(self.style.WARNING('🔄 Running database migrations...'))
-        try:
-            call_command('migrate', verbosity=1, interactive=False)
-            self.stdout.write(self.style.SUCCESS('✅ Migrations completed'))
-        except Exception as e:
-            self.stdout.write(self.style.ERROR(f'❌ Migration failed: {e}'))
-            return
+            # Try to run migrations anyway
+            self.stdout.write(self.style.WARNING('🔄 Attempting to run migrations...'))
+            try:
+                call_command('migrate', verbosity=1, interactive=False)
+                self.stdout.write(self.style.SUCCESS('✅ Migrations completed'))
+            except Exception as migrate_error:
+                self.stdout.write(self.style.ERROR(f'❌ Migration failed: {migrate_error}'))
+                return
         
         # Create superuser if it doesn't exist
-        if not User.objects.filter(is_superuser=True).exists():
-            self.stdout.write(self.style.WARNING('👤 Creating default superuser...'))
-            try:
+        try:
+            if not User.objects.filter(is_superuser=True).exists():
+                self.stdout.write(self.style.WARNING('👤 Creating default superuser...'))
                 User.objects.create_superuser(
                     username='admin',
                     email='admin@edufeedback.com',
@@ -42,22 +40,14 @@ class Command(BaseCommand):
                 )
                 self.stdout.write(self.style.SUCCESS('✅ Superuser created: admin/admin123'))
                 self.stdout.write(self.style.WARNING('⚠️  IMPORTANT: Change password after first login!'))
-            except Exception as e:
-                self.stdout.write(self.style.ERROR(f'❌ Superuser creation failed: {e}'))
-        else:
-            self.stdout.write(self.style.WARNING('👤 Superuser already exists, skipping...'))
-        
-        # Collect static files
-        self.stdout.write(self.style.WARNING('📁 Collecting static files...'))
-        try:
-            call_command('collectstatic', verbosity=1, interactive=False)
-            self.stdout.write(self.style.SUCCESS('✅ Static files collected'))
+            else:
+                self.stdout.write(self.style.WARNING('👤 Superuser already exists, skipping...'))
         except Exception as e:
-            self.stdout.write(self.style.ERROR(f'❌ Static files collection failed: {e}'))
+            self.stdout.write(self.style.ERROR(f'❌ Superuser creation failed: {e}'))
         
         # Create demo data if needed
-        self.stdout.write(self.style.WARNING('🎭 Setting up demo data...'))
         try:
+            self.stdout.write(self.style.WARNING('🎭 Setting up demo data...'))
             call_command('setup_demo_data', '--create-lecturers', '--create-courses')
             self.stdout.write(self.style.SUCCESS('✅ Demo data created'))
         except Exception as e:
