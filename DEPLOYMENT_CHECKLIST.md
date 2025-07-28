@@ -28,7 +28,7 @@
 ## 🚀 Deployment Platform
 
 ### Render (100% FREE - Recommended)
-- [ ] Create GitHub repository
+- [x] Create GitHub repository (✅ https://github.com/Elabs-llc/edufeedback-system.git)
 - [ ] Create Render account (free)
 - [ ] Create PostgreSQL database (free)
 - [ ] Create web service (free)
