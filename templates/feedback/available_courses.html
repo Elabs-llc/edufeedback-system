@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}Available Courses - EduFeedback{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <div class="mb-2">
+                        <span class="badge {{ role_badge_class }} fs-6">
+                            <i class="fas fa-user-graduate me-1"></i>{{ user_role }}
+                        </span>
+                    </div>
+                    <h2><i class="fas fa-graduation-cap text-primary"></i> Available Courses</h2>
+                </div>
+                <div>
+                    <a href="{% url 'course_list' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-list"></i> My Enrolled Courses
+                    </a>
+                </div>
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            {% if courses %}
+                <div class="row">
+                    {% for course in courses %}
+                        <div class="col-md-6 col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:100 }}">
+                            <div class="card h-100 shadow-sm border-0">
+                                <div class="card-header bg-gradient-primary text-white">
+                                    <h5 class="card-title mb-0">
+                                        <i class="fas fa-book"></i> {{ course.code }}
+                                    </h5>
+                                </div>
+                                <div class="card-body d-flex flex-column">
+                                    <h6 class="text-primary mb-3">{{ course.name }}</h6>
+                                    
+                                    {% if course.description %}
+                                        <p class="text-muted small mb-3">{{ course.description|truncatewords:20 }}</p>
+                                    {% endif %}
+                                    
+                                    <div class="mb-3">
+                                        <small class="text-muted">
+                                            <i class="fas fa-chalkboard-teacher"></i> 
+                                            <strong>Lecturer:</strong> {{ course.lecturer.user.get_full_name|default:course.lecturer.user.username }}
+                                        </small>
+                                        <br>
+                                        <small class="text-muted">
+                                            <i class="fas fa-building"></i> 
+                                            <strong>Department:</strong> {{ course.lecturer.department }}
+                                        </small>
+                                        <br>
+                                        <small class="text-muted">
+                                            <i class="fas fa-users"></i> 
+                                            <strong>Enrolled Students:</strong> {{ course.students.count }}
+                                        </small>
+                                    </div>
+                                    
+                                    <div class="mt-auto">
+                                        <a href="{% url 'enroll_course' course.id %}" 
+                                           class="btn btn-success btn-sm w-100"
+                                           onclick="return confirm('Are you sure you want to enroll in {{ course.name }}?')">
+                                            <i class="fas fa-plus-circle"></i> Enroll in Course
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-light">
+                                    <small class="text-muted">
+                                        <i class="fas fa-calendar-alt"></i> 
+                                        Created: {{ course.created_at|date:"M d, Y" }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-info-circle"></i> Course Enrollment Information</h6>
+                            <ul class="mb-0">
+                                <li>Click "Enroll in Course" to register for any course you're interested in</li>
+                                <li>Once enrolled, you can submit feedback for the course</li>
+                                <li>You can unenroll from courses before submitting feedback</li>
+                                <li>After submitting feedback, you cannot unenroll from the course</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <div class="mb-4">
+                        <i class="fas fa-graduation-cap text-muted" style="font-size: 4rem;"></i>
+                    </div>
+                    <h4 class="text-muted mb-3">No Courses Available</h4>
+                    <p class="text-muted mb-4">
+                        There are currently no courses available for enrollment, or you are already enrolled in all available courses.
+                    </p>
+                    <a href="{% url 'course_list' %}" class="btn btn-primary">
+                        <i class="fas fa-list"></i> View My Enrolled Courses
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+}
+
+.card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-header h5 {
+    font-weight: 600;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, #218838 0%, #1e7e34 100%);
+    transform: translateY(-1px);
+}
+</style>
+{% endblock %}

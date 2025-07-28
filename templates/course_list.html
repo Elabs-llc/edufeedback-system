@@ -1,0 +1,183 @@
+
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}My Enrolled Courses - EduFeedback{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <div class="mb-2">
+                        <span class="badge {{ role_badge_class }} fs-6">
+                            <i class="fas fa-user-graduate me-1"></i>{{ user_role }}
+                        </span>
+                    </div>
+                    <h2><i class="fas fa-book-open text-primary"></i> My Enrolled Courses</h2>
+                </div>
+                <div>
+                    <a href="{% url 'available_courses' %}" class="btn btn-success">
+                        <i class="fas fa-plus-circle"></i> Enroll in New Courses
+                    </a>
+                    <a href="{% url 'dashboard' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-home"></i> Dashboard
+                    </a>
+                </div>
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            {% if courses_data %}
+                <div class="row">
+                    {% for course_data in courses_data %}
+                        {% with course=course_data.course user_feedback=course_data.user_feedback has_feedback=course_data.has_submitted_feedback %}
+                        <div class="col-md-6 col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:100 }}">
+                            <div class="card h-100 shadow-sm border-0">
+                                <div class="card-header bg-gradient-success text-white">
+                                    <h5 class="card-title mb-0">
+                                        <i class="fas fa-check-circle"></i> {{ course.code }}
+                                    </h5>
+                                </div>
+                                <div class="card-body d-flex flex-column">
+                                    <h6 class="text-primary mb-3">{{ course.name }}</h6>
+                                    
+                                    {% if course.description %}
+                                        <p class="text-muted small mb-3">{{ course.description|truncatewords:20 }}</p>
+                                    {% endif %}
+                                    
+                                    <div class="mb-3">
+                                        <small class="text-muted">
+                                            <i class="fas fa-chalkboard-teacher"></i> 
+                                            <strong>Lecturer:</strong> {{ course.lecturer.user.get_full_name|default:course.lecturer.user.username }}
+                                        </small>
+                                        <br>
+                                        <small class="text-muted">
+                                            <i class="fas fa-building"></i> 
+                                            <strong>Department:</strong> {{ course.lecturer.department }}
+                                        </small>
+                                        <br>
+                                        <small class="text-muted">
+                                            <i class="fas fa-users"></i> 
+                                            <strong>Total Students:</strong> {{ course.students.count }}
+                                        </small>
+                                    </div>
+                                    
+                                    <!-- Check if feedback already submitted -->
+                                    {% if has_feedback %}
+                                        <div class="alert alert-success alert-sm mb-3">
+                                            <i class="fas fa-check"></i> Feedback submitted on {{ user_feedback.submitted_at|date:"M d, Y" }}
+                                        </div>
+                                    {% endif %}
+                                    
+                                    <div class="mt-auto">
+                                        <div class="d-grid gap-2">
+                                            {% if has_feedback %}
+                                                <button class="btn btn-outline-success btn-sm" disabled>
+                                                    <i class="fas fa-check-circle"></i> Feedback Submitted
+                                                </button>
+                                            {% else %}
+                                                <a href="{% url 'submit_feedback' course.id %}" class="btn btn-primary btn-sm">
+                                                    <i class="fas fa-comment-dots"></i> Submit Feedback
+                                                </a>
+                                                <a href="{% url 'unenroll_course' course.id %}" 
+                                                   class="btn btn-outline-danger btn-sm"
+                                                   onclick="return confirm('Are you sure you want to unenroll from {{ course.name }}?')">
+                                                    <i class="fas fa-minus-circle"></i> Unenroll
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-light">
+                                    <small class="text-muted">
+                                        <i class="fas fa-calendar-alt"></i> 
+                                        Enrolled: {{ course.created_at|date:"M d, Y" }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endwith %}
+                    {% endfor %}
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-info-circle"></i> Course Information</h6>
+                            <ul class="mb-0">
+                                <li>You can submit feedback for each enrolled course</li>
+                                <li>Once feedback is submitted, you cannot modify or delete it</li>
+                                <li>You cannot unenroll from courses after submitting feedback</li>
+                                <li>To enroll in more courses, click "Enroll in New Courses" above</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <div class="mb-4">
+                        <i class="fas fa-book-open text-muted" style="font-size: 4rem;"></i>
+                    </div>
+                    <h4 class="text-muted mb-3">No Enrolled Courses</h4>
+                    <p class="text-muted mb-4">
+                        You haven't enrolled in any courses yet. Browse available courses and enroll to start providing feedback.
+                    </p>
+                    <div class="d-grid gap-2 d-md-block">
+                        <a href="{% url 'available_courses' %}" class="btn btn-success">
+                            <i class="fas fa-graduation-cap"></i> Browse Available Courses
+                        </a>
+                        <a href="{% url 'dashboard' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-home"></i> Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.bg-gradient-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+}
+
+.card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-header h5 {
+    font-weight: 600;
+}
+
+.alert-sm {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.d-grid .btn {
+    margin-bottom: 0.5rem;
+}
+
+.d-grid .btn:last-child {
+    margin-bottom: 0;
+}
+</style>
+{% endblock %}

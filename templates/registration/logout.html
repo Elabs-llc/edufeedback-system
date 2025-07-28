@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Logout - EduFeedback System{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center min-vh-100 align-items-center">
+        <div class="col-lg-6 col-xl-5">
+            <!-- Logout Success Card -->
+            <div class="card-custom text-center" data-aos="zoom-in">
+                <div class="card-body-custom py-5">
+                    <!-- Success Icon -->
+                    <div class="mb-4" data-aos="bounce" data-aos-delay="200">
+                        <div class="bg-success bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center mx-auto" 
+                             style="width: 100px; height: 100px;">
+                            <i class="bi bi-check-circle-fill text-white" style="font-size: 2.5rem;"></i>
+                        </div>
+                    </div>
+
+                    <!-- Main Message -->
+                    <div class="mb-4" data-aos="fade-up" data-aos-delay="400">
+                        <h1 class="display-6 fw-bold mb-3" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+                            Successfully Logged Out
+                        </h1>
+                        <p class="lead text-muted mb-4">
+                            You have been safely logged out of your EduFeedback account. 
+                            Thank you for using our platform!
+                        </p>
+                    </div>
+
+                    <!-- Session Info -->
+                    <div class="bg-light rounded-3 p-4 mb-4" data-aos="fade-up" data-aos-delay="600">
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <div class="border-end">
+                                    <i class="bi bi-shield-check text-success mb-2" style="font-size: 1.5rem;"></i>
+                                    <h6 class="fw-bold text-dark mb-1">Secure</h6>
+                                    <small class="text-muted">Session Ended</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <i class="bi bi-clock text-primary mb-2" style="font-size: 1.5rem;"></i>
+                                <h6 class="fw-bold text-dark mb-1">Safe</h6>
+                                <small class="text-muted">Data Protected</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="bg-primary bg-gradient text-white rounded-3 p-4 mb-4" data-aos="fade-up" data-aos-delay="800">
+                        <h6 class="fw-bold mb-3">
+                            <i class="bi bi-graph-up me-2"></i>
+                            Thank You for Your Participation!
+                        </h6>
+                        <div class="row">
+                            <div class="col-4">
+                                <h5 class="fw-bold mb-1">🎓</h5>
+                                <small class="opacity-90">Education</small>
+                            </div>
+                            <div class="col-4">
+                                <h5 class="fw-bold mb-1">💬</h5>
+                                <small class="opacity-90">Feedback</small>
+                            </div>
+                            <div class="col-4">
+                                <h5 class="fw-bold mb-1">⭐</h5>
+                                <small class="opacity-90">Excellence</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex flex-column flex-md-row gap-3 justify-content-center" data-aos="fade-up" data-aos-delay="1000">
+                        <a href="{% url 'login' %}" class="btn btn-primary-custom btn-custom">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Login Again
+                        </a>
+                        <a href="{% url 'register_student' %}" class="btn btn-outline-primary">
+                            <i class="bi bi-person-plus me-2"></i>Create Account
+                        </a>
+                    </div>
+
+                    <!-- Footer Information -->
+                    <div class="mt-4 pt-4 border-top" data-aos="fade-up" data-aos-delay="1200">
+                        <div class="row text-center">
+                            <div class="col-md-4 mb-2">
+                                <small class="text-muted">
+                                    <i class="bi bi-shield-lock me-1"></i>
+                                    Secure Platform
+                                </small>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <small class="text-muted">
+                                    <i class="bi bi-clock me-1"></i>
+                                    24/7 Available
+                                </small>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <small class="text-muted">
+                                    <i class="bi bi-headset me-1"></i>
+                                    Support Ready
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Information Card -->
+            <div class="card-custom mt-4" data-aos="fade-up" data-aos-delay="1400">
+                <div class="card-body-custom text-center">
+                    <h6 class="fw-bold text-dark mb-3">
+                        <i class="bi bi-lightbulb me-2"></i>
+                        Remember
+                    </h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center justify-content-center">
+                                <i class="bi bi-bookmark-check text-primary me-2"></i>
+                                <small class="text-muted">Your feedback helps improve education quality</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center justify-content-center">
+                                <i class="bi bi-people text-success me-2"></i>
+                                <small class="text-muted">Join thousands of students making a difference</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom CSS for enhanced visual effects -->
+<style>
+    .card-custom {
+        transition: all 0.3s ease;
+    }
+    
+    .bg-success.bg-gradient {
+        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
+    }
+    
+    .bg-primary.bg-gradient {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    }
+    
+    @keyframes checkmark {
+        0% { transform: scale(0) rotate(0deg); }
+        50% { transform: scale(1.2) rotate(180deg); }
+        100% { transform: scale(1) rotate(360deg); }
+    }
+    
+    .bi-check-circle-fill {
+        animation: checkmark 1s ease-in-out;
+    }
+    
+    .card-custom:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+</style>
+{% endblock %}

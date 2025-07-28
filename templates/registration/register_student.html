@@ -1,0 +1,278 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}Student Registration - EduFeedback System{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row min-vh-100">
+        <!-- Left Side - Form -->
+        <div class="col-lg-6 d-flex align-items-center justify-content-center">
+            <div class="w-100" style="max-width: 500px;" data-aos="fade-right">
+                <!-- Header -->
+                <div class="text-center mb-5">
+                    <div class="mb-4">
+                        <div class="bg-primary bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center" 
+                             style="width: 80px; height: 80px;">
+                            <i class="bi bi-person-plus-fill text-white" style="font-size: 2rem;"></i>
+                        </div>
+                    </div>
+                    <h1 class="fw-bold mb-2" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+                        Join EduFeedback
+                    </h1>
+                    <p class="text-muted lead">Create your student account and start making a difference in education</p>
+                </div>
+
+                <!-- Registration Form -->
+                <div class="card-custom">
+                    <div class="card-body-custom p-4">
+                        <form method="post" id="registrationForm" novalidate>
+                            {% csrf_token %}
+                            
+                            <!-- Error Messages -->
+                            {% if form.non_field_errors %}
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    {% for error in form.non_field_errors %}
+                                        <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
+                                    {% endfor %}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endif %}
+
+                            <!-- Personal Information -->
+                            <h6 class="fw-bold text-primary mb-3">
+                                <i class="bi bi-person-badge me-2"></i>Personal Information
+                            </h6>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        {% render_field form.first_name class="form-control" placeholder="First Name" %}
+                                        <label for="{{ form.first_name.id_for_label }}">
+                                            <i class="bi bi-person me-2"></i>First Name
+                                        </label>
+                                        {% if form.first_name.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {% for error in form.first_name.errors %}{{ error }}{% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        {% render_field form.last_name class="form-control" placeholder="Last Name" %}
+                                        <label for="{{ form.last_name.id_for_label }}">
+                                            <i class="bi bi-person me-2"></i>Last Name
+                                        </label>
+                                        {% if form.last_name.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {% for error in form.last_name.errors %}{{ error }}{% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Account Information -->
+                            <h6 class="fw-bold text-success mb-3 mt-4">
+                                <i class="bi bi-shield-lock me-2"></i>Account Information
+                            </h6>
+
+                            <div class="form-floating mb-3">
+                                {% render_field form.username class="form-control" placeholder="Username" %}
+                                <label for="{{ form.username.id_for_label }}">
+                                    <i class="bi bi-at me-2"></i>Username
+                                </label>
+                                {% if form.username.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.username.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                                <small class="text-muted">Choose a unique username (letters, numbers, and @/./+/-/_ only)</small>
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                {% render_field form.email class="form-control" placeholder="Email Address" %}
+                                <label for="{{ form.email.id_for_label }}">
+                                    <i class="bi bi-envelope me-2"></i>Email Address
+                                </label>
+                                {% if form.email.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.email.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Password Fields -->
+                            <div class="form-floating mb-3">
+                                {% render_field form.password1 class="form-control" placeholder="Password" %}
+                                <label for="{{ form.password1.id_for_label }}">
+                                    <i class="bi bi-lock me-2"></i>Password
+                                </label>
+                                <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y me-3" 
+                                        style="z-index: 5;" onclick="togglePassword('{{ form.password1.id_for_label }}', this)">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                {% if form.password1.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.password1.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-floating mb-4">
+                                {% render_field form.password2 class="form-control" placeholder="Confirm Password" %}
+                                <label for="{{ form.password2.id_for_label }}">
+                                    <i class="bi bi-lock-fill me-2"></i>Confirm Password
+                                </label>
+                                <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y me-3" 
+                                        style="z-index: 5;" onclick="togglePassword('{{ form.password2.id_for_label }}', this)">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                {% if form.password2.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.password2.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit" class="btn btn-primary-custom btn-custom w-100 mb-3">
+                                <i class="bi bi-person-plus me-2"></i>Create Student Account
+                            </button>
+
+                            <!-- Already have account -->
+                            <div class="text-center">
+                                <small class="text-muted">
+                                    Already have an account? 
+                                    <a href="{% url 'login' %}" class="text-decoration-none fw-semibold">Sign in here</a>
+                                </small>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Other Registration Options -->
+                <div class="mt-4 text-center">
+                    <small class="text-muted">Register as:</small>
+                    <div class="mt-2">
+                        <a href="{% url 'register_lecturer' %}" class="btn btn-outline-secondary btn-sm me-2">
+                            <i class="bi bi-person-workspace me-1"></i>Lecturer
+                        </a>
+                        <a href="{% url 'register_admin' %}" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-shield-check me-1"></i>Admin
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side - Information -->
+        <div class="col-lg-6 bg-gradient-primary d-none d-lg-flex align-items-center justify-content-center text-white">
+            <div class="text-center" data-aos="fade-left">
+                <div class="mb-4">
+                    <i class="bi bi-mortarboard-fill" style="font-size: 4rem;"></i>
+                </div>
+                <h2 class="fw-bold mb-4">Welcome to EduFeedback</h2>
+                <p class="lead mb-4">Join thousands of students making a difference in education through meaningful feedback</p>
+                
+                <!-- Features -->
+                <div class="row mt-5">
+                    <div class="col-12 mb-4">
+                        <div class="d-flex align-items-center justify-content-center">
+                            <div class="bg-white bg-opacity-20 rounded-circle p-3 me-3">
+                                <i class="bi bi-chat-heart-fill"></i>
+                            </div>
+                            <div class="text-start">
+                                <h6 class="fw-bold mb-1">Share Your Voice</h6>
+                                <small class="opacity-90">Provide valuable feedback on courses and teaching quality</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12 mb-4">
+                        <div class="d-flex align-items-center justify-content-center">
+                            <div class="bg-white bg-opacity-20 rounded-circle p-3 me-3">
+                                <i class="bi bi-graph-up-arrow"></i>
+                            </div>
+                            <div class="text-start">
+                                <h6 class="fw-bold mb-1">Drive Improvement</h6>
+                                <small class="opacity-90">Help lecturers enhance their teaching methods</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12 mb-4">
+                        <div class="d-flex align-items-center justify-content-center">
+                            <div class="bg-white bg-opacity-20 rounded-circle p-3 me-3">
+                                <i class="bi bi-award-fill"></i>
+                            </div>
+                            <div class="text-start">
+                                <h6 class="fw-bold mb-1">Recognition</h6>
+                                <small class="opacity-90">Acknowledge excellent teaching and course design</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="row mt-5 text-center">
+                    <div class="col-4">
+                        <h3 class="fw-bold">15K+</h3>
+                        <small class="opacity-90">Active Students</small>
+                    </div>
+                    <div class="col-4">
+                        <h3 class="fw-bold">500+</h3>
+                        <small class="opacity-90">Courses</small>
+                    </div>
+                    <div class="col-4">
+                        <h3 class="fw-bold">98%</h3>
+                        <small class="opacity-90">Satisfaction</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom JavaScript -->
+<script>
+function togglePassword(fieldId, button) {
+    const field = document.getElementById(fieldId);
+    const icon = button.querySelector('i');
+    
+    if (field.type === 'password') {
+        field.type = 'text';
+        icon.className = 'bi bi-eye-slash';
+    } else {
+        field.type = 'password';
+        icon.className = 'bi bi-eye';
+    }
+}
+
+// Form validation and enhancement
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('registrationForm');
+    const inputs = form.querySelectorAll('input[required]');
+    
+    inputs.forEach(input => {
+        input.addEventListener('blur', function() {
+            if (this.value.trim() === '') {
+                this.classList.add('is-invalid');
+            } else {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            }
+        });
+        
+        input.addEventListener('input', function() {
+            if (this.classList.contains('is-invalid') && this.value.trim() !== '') {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

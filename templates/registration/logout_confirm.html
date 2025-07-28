@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirm Logout - EduFeedback{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark text-center">
+                    <h4><i class="fas fa-sign-out-alt me-2"></i>Confirm Logout</h4>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        <i class="fas fa-question-circle text-warning" style="font-size: 3rem;"></i>
+                    </div>
+                    <h5 class="mb-3">Are you sure you want to logout?</h5>
+                    <p class="text-muted mb-4">
+                        You are currently logged in as <strong>{{ user.get_full_name|default:user.username }}</strong>
+                        with the role <span class="badge {{ role_badge_class }}">{{ user_role }}</span>
+                    </p>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                        <form method="post" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-sign-out-alt me-2"></i>Yes, Logout
+                            </button>
+                        </form>
+                        <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

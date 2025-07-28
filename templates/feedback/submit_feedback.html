@@ -1,0 +1,269 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}Submit Feedback - EduFeedback System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-xl-10">
+        <!-- Hero Section -->
+        <div class="card-custom mb-5" data-aos="zoom-in">
+            <div class="card-body-custom text-center">
+                <h1 class="display-5 fw-bold mb-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+                    Share Your Learning Experience
+                </h1>
+                <p class="lead text-muted">Your honest feedback helps improve education quality for everyone</p>
+                <div class="row mt-4">
+                    <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                        <div class="text-center">
+                            <div class="bg-primary bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                <i class="bi bi-shield-check text-white" style="font-size: 1.5rem;"></i>
+                            </div>
+                            <h6 class="fw-bold">Anonymous</h6>
+                            <small class="text-muted">Your identity is protected</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                        <div class="text-center">
+                            <div class="bg-success bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                <i class="bi bi-speedometer2 text-white" style="font-size: 1.5rem;"></i>
+                            </div>
+                            <h6 class="fw-bold">Quick & Easy</h6>
+                            <small class="text-muted">Takes less than 2 minutes</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                        <div class="text-center">
+                            <div class="bg-info bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                <i class="bi bi-graph-up text-white" style="font-size: 1.5rem;"></i>
+                            </div>
+                            <h6 class="fw-bold">Impactful</h6>
+                            <small class="text-muted">Helps improve education</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if user.enrolled_courses.exists %}
+            <!-- Feedback Form -->
+            <div class="card-custom" data-aos="fade-up">
+                <div class="card-header-custom">
+                    <h4 class="mb-0"><i class="bi bi-chat-quote-fill me-2"></i>Course Feedback Form</h4>
+                </div>
+                <div class="card-body-custom">
+                    <form method="post" novalidate id="feedbackForm">
+                        {% csrf_token %}
+                        
+                        <!-- Course Selection -->
+                        <div class="mb-4" data-aos="fade-right" data-aos-delay="100">
+                            <label for="{{ form.course.id_for_label }}" class="form-label-custom">
+                                <i class="bi bi-book-fill me-2 text-primary"></i>Select Course
+                            </label>
+                            {{ form.course|add_class:"form-control-custom form-select" }}
+                            {% if form.course.errors %}
+                                <div class="text-danger small mt-1">
+                                    <i class="bi bi-exclamation-circle me-1"></i>{{ form.course.errors.0 }}
+                                </div>
+                            {% endif %}
+                            <small class="text-muted">Choose the course you want to provide feedback for</small>
+                        </div>
+
+                        <!-- Rating Section -->
+                        <div class="row">
+                            <!-- Clarity Rating -->
+                            <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                                <div class="card border-primary h-100">
+                                    <div class="card-header bg-primary bg-gradient text-white text-center">
+                                        <i class="bi bi-lightbulb-fill me-2"></i>Teaching Clarity
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <p class="small text-muted mb-3">How clear were the explanations and course content?</p>
+                                        <div class="rating-container mb-3">
+                                            {{ form.clarity_rating|add_class:"form-control-custom text-center" }}
+                                            {% if form.clarity_rating.errors %}
+                                                <div class="text-danger small mt-1">{{ form.clarity_rating.errors.0 }}</div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="rating-scale">
+                                            <div class="d-flex justify-content-between">
+                                                <small class="text-muted">1<br>Poor</small>
+                                                <small class="text-muted">2<br>Fair</small>
+                                                <small class="text-muted">3<br>Good</small>
+                                                <small class="text-muted">4<br>Very Good</small>
+                                                <small class="text-muted">5<br>Excellent</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Engagement Rating -->
+                            <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+                                <div class="card border-success h-100">
+                                    <div class="card-header bg-success bg-gradient text-white text-center">
+                                        <i class="bi bi-people-fill me-2"></i>Student Engagement
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <p class="small text-muted mb-3">How well did the lecturer engage with students?</p>
+                                        <div class="rating-container mb-3">
+                                            {{ form.engagement_rating|add_class:"form-control-custom text-center" }}
+                                            {% if form.engagement_rating.errors %}
+                                                <div class="text-danger small mt-1">{{ form.engagement_rating.errors.0 }}</div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="rating-scale">
+                                            <div class="d-flex justify-content-between">
+                                                <small class="text-muted">1<br>Poor</small>
+                                                <small class="text-muted">2<br>Fair</small>
+                                                <small class="text-muted">3<br>Good</small>
+                                                <small class="text-muted">4<br>Very Good</small>
+                                                <small class="text-muted">5<br>Excellent</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Effectiveness Rating -->
+                            <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="400">
+                                <div class="card border-info h-100">
+                                    <div class="card-header bg-info bg-gradient text-white text-center">
+                                        <i class="bi bi-trophy-fill me-2"></i>Course Effectiveness
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <p class="small text-muted mb-3">How effective was the overall course delivery?</p>
+                                        <div class="rating-container mb-3">
+                                            {{ form.effectiveness_rating|add_class:"form-control-custom text-center" }}
+                                            {% if form.effectiveness_rating.errors %}
+                                                <div class="text-danger small mt-1">{{ form.effectiveness_rating.errors.0 }}</div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="rating-scale">
+                                            <div class="d-flex justify-content-between">
+                                                <small class="text-muted">1<br>Poor</small>
+                                                <small class="text-muted">2<br>Fair</small>
+                                                <small class="text-muted">3<br>Good</small>
+                                                <small class="text-muted">4<br>Very Good</small>
+                                                <small class="text-muted">5<br>Excellent</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Comments Section -->
+                        <div class="mb-4" data-aos="fade-up" data-aos-delay="500">
+                            <label for="{{ form.comments.id_for_label }}" class="form-label-custom">
+                                <i class="bi bi-chat-text-fill me-2 text-info"></i>Additional Comments (Optional)
+                            </label>
+                            {{ form.comments|add_class:"form-control-custom" }}
+                            {% if form.comments.errors %}
+                                <div class="text-danger small mt-1">{{ form.comments.errors.0 }}</div>
+                            {% endif %}
+                            <small class="text-muted">Share any specific feedback, suggestions, or comments about the course or teaching methods.</small>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex flex-column flex-md-row gap-3 justify-content-between align-items-center" data-aos="fade-up" data-aos-delay="600">
+                            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+                            </a>
+                            <button type="submit" class="btn btn-primary-custom btn-custom btn-lg">
+                                <i class="bi bi-send-fill me-2"></i>Submit Feedback
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tips Section -->
+            <div class="card-custom mt-4" data-aos="fade-up" data-aos-delay="700">
+                <div class="card-body-custom">
+                    <h6 class="fw-bold mb-3"><i class="bi bi-lightbulb-fill text-warning me-2"></i>Tips for Effective Feedback</h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Be honest and constructive</li>
+                                <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Provide specific examples when possible</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Focus on course content and delivery</li>
+                                <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Suggest improvements if applicable</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        {% else %}
+            <!-- No Courses Message -->
+            <div class="card-custom" data-aos="zoom-in">
+                <div class="card-body-custom text-center">
+                    <div class="mb-4">
+                        <i class="bi bi-exclamation-triangle-fill text-warning" style="font-size: 4rem;"></i>
+                    </div>
+                    <h3 class="fw-bold mb-3">No Courses Available</h3>
+                    <p class="lead text-muted mb-4">You are not currently enrolled in any courses. Please contact your administrator to be enrolled in courses before submitting feedback.</p>
+                    <div class="d-flex flex-column flex-md-row gap-3 justify-content-center">
+                        <a href="{% url 'dashboard' %}" class="btn btn-primary-custom btn-custom">
+                            <i class="bi bi-house-fill me-2"></i>Back to Dashboard
+                        </a>
+                        <a href="mailto:admin@edufeedback.com" class="btn btn-outline-primary">
+                            <i class="bi bi-envelope-fill me-2"></i>Contact Administrator
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Custom Scripts -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add interactive rating highlighting
+    const ratingInputs = document.querySelectorAll('input[type="number"]');
+    
+    ratingInputs.forEach(input => {
+        input.addEventListener('input', function() {
+            const value = parseInt(this.value);
+            const card = this.closest('.card');
+            
+            // Remove all rating classes
+            card.classList.remove('border-danger', 'border-warning', 'border-info', 'border-primary', 'border-success');
+            
+            // Add appropriate class based on rating
+            if (value >= 1 && value <= 5) {
+                const ratingClasses = ['border-danger', 'border-warning', 'border-info', 'border-primary', 'border-success'];
+                card.classList.add(ratingClasses[value - 1]);
+            }
+        });
+    });
+    
+    // Form validation feedback
+    const form = document.getElementById('feedbackForm');
+    form.addEventListener('submit', function(e) {
+        const course = document.querySelector('select[name="course"]').value;
+        const clarity = document.querySelector('input[name="clarity_rating"]').value;
+        const engagement = document.querySelector('input[name="engagement_rating"]').value;
+        const effectiveness = document.querySelector('input[name="effectiveness_rating"]').value;
+        
+        if (!course || !clarity || !engagement || !effectiveness) {
+            e.preventDefault();
+            alert('Please fill in all required fields before submitting.');
+            return false;
+        }
+        
+        if (clarity < 1 || clarity > 5 || engagement < 1 || engagement > 5 || effectiveness < 1 || effectiveness > 5) {
+            e.preventDefault();
+            alert('Please enter ratings between 1 and 5.');
+            return false;
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Feedback Results - {{ course.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4" data-aos="fade-down">
+        <div class="col">
+            <h1 class="display-6 fw-bold mb-2" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+                <i class="bi bi-graph-up-arrow me-3"></i>Feedback Results
+            </h1>
+            <p class="text-muted">{{ course.code }} - {{ course.name }}</p>
+        </div>
+    </div>
+
+    {% if feedbacks %}
+        <!-- Summary Statistics -->
+        <div class="row mb-4">
+            <div class="col-md-3" data-aos="flip-left" data-aos-delay="100">
+                <div class="card-custom text-center">
+                    <div class="card-body-custom">
+                        <h3 class="fw-bold text-primary">{{ total_feedback }}</h3>
+                        <p class="text-muted mb-0">Total Responses</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3" data-aos="flip-left" data-aos-delay="200">
+                <div class="card-custom text-center">
+                    <div class="card-body-custom">
+                        <h3 class="fw-bold text-success">{{ avg_clarity }}</h3>
+                        <p class="text-muted mb-0">Avg Clarity</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3" data-aos="flip-left" data-aos-delay="300">
+                <div class="card-custom text-center">
+                    <div class="card-body-custom">
+                        <h3 class="fw-bold text-info">{{ avg_engagement }}</h3>
+                        <p class="text-muted mb-0">Avg Engagement</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3" data-aos="flip-left" data-aos-delay="400">
+                <div class="card-custom text-center">
+                    <div class="card-body-custom">
+                        <h3 class="fw-bold text-warning">{{ avg_effectiveness }}</h3>
+                        <p class="text-muted mb-0">Avg Effectiveness</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feedback List -->
+        <div class="card-custom" data-aos="fade-up">
+            <div class="card-header-custom">
+                <h4 class="mb-0"><i class="bi bi-chat-dots me-2"></i>Individual Feedback</h4>
+            </div>
+            <div class="card-body-custom">
+                <div class="table-responsive">
+                    <table class="table table-custom">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Clarity</th>
+                                <th>Engagement</th>
+                                <th>Effectiveness</th>
+                                <th>Comments</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for feedback in feedbacks %}
+                            <tr>
+                                <td>{{ feedback.student.get_full_name|default:"Anonymous" }}</td>
+                                <td><span class="badge-custom bg-primary">{{ feedback.clarity_rating }}/5</span></td>
+                                <td><span class="badge-custom bg-success">{{ feedback.engagement_rating }}/5</span></td>
+                                <td><span class="badge-custom bg-info">{{ feedback.effectiveness_rating }}/5</span></td>
+                                <td>{{ feedback.comments|default:"No comments" }}</td>
+                                <td>{{ feedback.submitted_at|date:"M d, Y" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="card-custom text-center" data-aos="zoom-in">
+            <div class="card-body-custom py-5">
+                <i class="bi bi-chat-square-text text-muted mb-3" style="font-size: 3rem;"></i>
+                <h3 class="text-muted mb-3">No Feedback Yet</h3>
+                <p class="text-muted">This course hasn't received any feedback submissions yet.</p>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Back Button -->
+    <div class="mt-4 text-center">
+        <a href="{% url 'course_list' %}" class="btn btn-outline-primary">
+            <i class="bi bi-arrow-left me-2"></i>Back to Courses
+        </a>
+    </div>
+</div>
+{% endblock %}

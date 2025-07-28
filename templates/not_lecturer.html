@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Access Restricted - EduFeedback System{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-6">
+            <!-- Access Denied Card -->
+            <div class="card-custom text-center" data-aos="zoom-in">
+                <div class="card-body-custom py-5">
+                    <!-- Icon Section -->
+                    <div class="mb-4" data-aos="bounce" data-aos-delay="200">
+                        <div class="bg-warning bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center mx-auto" 
+                             style="width: 120px; height: 120px;">
+                            <i class="bi bi-shield-exclamation text-white" style="font-size: 3rem;"></i>
+                        </div>
+                    </div>
+
+                    <!-- Main Message -->
+                    <div class="mb-4" data-aos="fade-up" data-aos-delay="400">
+                        <h1 class="display-6 fw-bold mb-3" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+                            Access Restricted
+                        </h1>
+                        <h4 class="text-muted mb-3">Lecturer Access Required</h4>
+                        <p class="lead text-muted">
+                            This section is exclusively available to lecturers and teaching staff. 
+                            You need lecturer privileges to access feedback reports and analytics.
+                        </p>
+                    </div>
+
+                    <!-- Information Box -->
+                    <div class="bg-light rounded-3 p-4 mb-4" data-aos="fade-up" data-aos-delay="600">
+                        <h6 class="fw-bold text-dark mb-3">
+                            <i class="bi bi-info-circle-fill text-primary me-2"></i>
+                            What you can do:
+                        </h6>
+                        <div class="row text-start">
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-start">
+                                    <i class="bi bi-check-circle text-success me-2 mt-1"></i>
+                                    <div>
+                                        <strong>Submit Feedback</strong>
+                                        <br><small class="text-muted">Provide valuable feedback for your enrolled courses</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-start">
+                                    <i class="bi bi-check-circle text-success me-2 mt-1"></i>
+                                    <div>
+                                        <strong>View Courses</strong>
+                                        <br><small class="text-muted">Browse available courses and enrollment status</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-start">
+                                    <i class="bi bi-check-circle text-success me-2 mt-1"></i>
+                                    <div>
+                                        <strong>Dashboard Access</strong>
+                                        <br><small class="text-muted">Access your personalized student dashboard</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-start">
+                                    <i class="bi bi-check-circle text-success me-2 mt-1"></i>
+                                    <div>
+                                        <strong>Profile Management</strong>
+                                        <br><small class="text-muted">Update your account settings and preferences</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Need Lecturer Access Section -->
+                    <div class="bg-primary bg-gradient text-white rounded-3 p-4 mb-4" data-aos="fade-up" data-aos-delay="800">
+                        <h6 class="fw-bold mb-3">
+                            <i class="bi bi-person-badge me-2"></i>
+                            Need Lecturer Access?
+                        </h6>
+                        <p class="mb-3 opacity-90">
+                            If you are a teaching staff member and require access to lecturer features, 
+                            please contact the system administrator or your department head.
+                        </p>
+                        <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center">
+                            <span class="badge bg-light text-dark px-3 py-2">
+                                <i class="bi bi-envelope me-1"></i> admin@university.edu
+                            </span>
+                            <span class="badge bg-light text-dark px-3 py-2">
+                                <i class="bi bi-telephone me-1"></i> +1 (555) 123-4567
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex flex-column flex-md-row gap-3 justify-content-center" data-aos="fade-up" data-aos-delay="1000">
+                        <a href="{% url 'dashboard' %}" class="btn btn-primary-custom btn-custom">
+                            <i class="bi bi-house-fill me-2"></i>Back to Dashboard
+                        </a>
+                        <a href="{% url 'course_list' %}" class="btn btn-outline-primary">
+                            <i class="bi bi-book me-2"></i>View Courses
+                        </a>
+                        {% if user.is_authenticated %}
+                            <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-secondary" style="border: 1px solid #6c757d;">
+                                    <i class="bi bi-box-arrow-right me-2"></i>Switch Account
+                                </button>
+                            </form>
+                        {% else %}
+                            <a href="{% url 'login' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>Login
+                            </a>
+                        {% endif %}
+                    </div>
+
+                    <!-- Footer Note -->
+                    <div class="mt-4 pt-4 border-top" data-aos="fade-up" data-aos-delay="1200">
+                        <small class="text-muted">
+                            <i class="bi bi-shield-check me-1"></i>
+                            This security measure helps protect sensitive academic data and maintains system integrity.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom CSS for enhanced visual effects -->
+<style>
+    .card-custom {
+        transition: all 0.3s ease;
+    }
+    
+    .card-custom:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+    
+    .bg-warning.bg-gradient {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+    }
+    
+    .bg-primary.bg-gradient {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    }
+    
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+    
+    .card-custom:hover .bi-shield-exclamation {
+        animation: pulse 2s infinite;
+    }
+</style>
+{% endblock %}

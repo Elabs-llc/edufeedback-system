@@ -1,0 +1,350 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - EduFeedback System{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="card-custom" data-aos="zoom-in">
+            <div class="card-body-custom text-center">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <div class="mb-3">
+                            <span class="badge {{ role_badge_class|default:'bg-primary' }} fs-6 px-3 py-2">
+                                <i class="bi {% if user.is_staff %}bi-shield-check{% elif is_lecturer %}bi-mortarboard{% else %}bi-person-badge{% endif %} me-2"></i>
+                                {{ user_role|default:'User' }}
+                            </span>
+                        </div>
+                        <h1 class="display-4 fw-bold mb-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                            Welcome Back, {{ user.get_full_name|default:user.username }}! 
+                        </h1>
+                        <p class="lead text-muted mb-4">
+                            {% if user.is_staff %}
+                                Manage your educational ecosystem with powerful administrative tools.
+                            {% elif is_lecturer %}
+                                Track student feedback and enhance your teaching effectiveness.
+                            {% else %}
+                                Share your learning experience and help improve education quality.
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="position-relative">
+                            <i class="bi {% if user.is_staff %}bi-gear-fill{% elif is_lecturer %}bi-mortarboard-fill{% else %}bi-person-hearts{% endif %}" 
+                               style="font-size: 8rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; opacity: 0.1;"></i>
+                            <div class="position-absolute top-50 start-50 translate-middle">
+                                <div class="bg-white rounded-circle p-4 shadow-lg">
+                                    <i class="bi {% if user.is_staff %}bi-gear-fill{% elif is_lecturer %}bi-mortarboard-fill{% else %}bi-person-hearts{% endif %}" 
+                                       style="font-size: 3rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Stats Row -->
+<div class="row mb-5">
+    {% if user.is_staff %}
+        <!-- Admin Stats -->
+        <div class="col-md-3 mb-4" data-aos="flip-left" data-aos-delay="100">
+            <div class="card-custom h-100">
+                <div class="card-body-custom text-center">
+                    <div class="mb-3">
+                        <div class="bg-primary bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="bi bi-people-fill text-white" style="font-size: 1.5rem;"></i>
+                        </div>
+                    </div>
+                    <h3 class="fw-bold text-primary">{{ total_users }}</h3>
+                    <p class="text-muted mb-0">Total Users</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4" data-aos="flip-left" data-aos-delay="200">
+            <div class="card-custom h-100">
+                <div class="card-body-custom text-center">
+                    <div class="mb-3">
+                        <div class="bg-success bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="bi bi-book-fill text-white" style="font-size: 1.5rem;"></i>
+                        </div>
+                    </div>
+                    <h3 class="fw-bold text-success">{{ active_courses }}</h3>
+                    <p class="text-muted mb-0">Active Courses</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4" data-aos="flip-left" data-aos-delay="300">
+            <div class="card-custom h-100">
+                <div class="card-body-custom text-center">
+                    <div class="mb-3">
+                        <div class="bg-info bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="bi bi-chat-text-fill text-white" style="font-size: 1.5rem;"></i>
+                        </div>
+                    </div>
+                    <h3 class="fw-bold text-info">{{ total_feedback }}</h3>
+                    <p class="text-muted mb-0">Total Feedback</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4" data-aos="flip-left" data-aos-delay="400">
+            <div class="card-custom h-100">
+                <div class="card-body-custom text-center">
+                    <div class="mb-3">
+                        <div class="bg-warning bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="bi bi-star-fill text-white" style="font-size: 1.5rem;"></i>
+                        </div>
+                    </div>
+                    <h3 class="fw-bold text-warning">{{ avg_rating|floatformat:1 }}</h3>
+                    <p class="text-muted mb-0">Avg Rating</p>
+                </div>
+            </div>
+        </div>
+    {% elif is_lecturer %}
+        <!-- Lecturer Stats -->
+        <div class="col-md-4 mb-4" data-aos="flip-left" data-aos-delay="100">
+            <div class="card-custom h-100">
+                <div class="card-body-custom text-center">
+                    <div class="mb-3">
+                        <div class="bg-primary bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="bi bi-journal-bookmark-fill text-white" style="font-size: 1.5rem;"></i>
+                        </div>
+                    </div>
+                    <h3 class="fw-bold text-primary">{{ my_courses_count }}</h3>
+                    <p class="text-muted mb-0">My Courses</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4" data-aos="flip-left" data-aos-delay="200">
+            <div class="card-custom h-100">
+                <div class="card-body-custom text-center">
+                    <div class="mb-3">
+                        <div class="bg-success bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="bi bi-people-fill text-white" style="font-size: 1.5rem;"></i>
+                        </div>
+                    </div>
+                    <h3 class="fw-bold text-success">{{ total_students }}</h3>
+                    <p class="text-muted mb-0">Total Students</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4" data-aos="flip-left" data-aos-delay="300">
+            <div class="card-custom h-100">
+                <div class="card-body-custom text-center">
+                    <div class="mb-3">
+                        <div class="bg-info bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="bi bi-chat-heart-fill text-white" style="font-size: 1.5rem;"></i>
+                        </div>
+                    </div>
+                    <h3 class="fw-bold text-info">{{ new_feedback }}</h3>
+                    <p class="text-muted mb-0">Total Feedback</p>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <!-- Student Stats -->
+        <div class="col-md-4 mb-4" data-aos="flip-left" data-aos-delay="100">
+            <div class="card-custom h-100">
+                <div class="card-body-custom text-center">
+                    <div class="mb-3">
+                        <div class="bg-primary bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="bi bi-book-half text-white" style="font-size: 1.5rem;"></i>
+                        </div>
+                    </div>
+                    <h3 class="fw-bold text-primary">{{ enrolled_courses_count }}</h3>
+                    <p class="text-muted mb-0">Enrolled Courses</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4" data-aos="flip-left" data-aos-delay="200">
+            <div class="card-custom h-100">
+                <div class="card-body-custom text-center">
+                    <div class="mb-3">
+                        <div class="bg-success bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="bi bi-check-circle-fill text-white" style="font-size: 1.5rem;"></i>
+                        </div>
+                    </div>
+                    <h3 class="fw-bold text-success">{{ feedback_submitted }}</h3>
+                    <p class="text-muted mb-0">Feedback Submitted</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4" data-aos="flip-left" data-aos-delay="300">
+            <div class="card-custom h-100">
+                <div class="card-body-custom text-center">
+                    <div class="mb-3">
+                        <div class="bg-warning bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="bi bi-clock-fill text-white" style="font-size: 1.5rem;"></i>
+                        </div>
+                    </div>
+                    <h3 class="fw-bold text-warning">{{ pending_feedback }}</h3>
+                    <p class="text-muted mb-0">Pending</p>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Action Cards -->
+<div class="row">
+    {% if user.is_staff %}
+        <!-- Admin Actions -->
+        <div class="col-lg-6 mb-4" data-aos="fade-right">
+            <div class="card-custom h-100">
+                <div class="card-header-custom">
+                    <h5 class="mb-0"><i class="bi bi-gear-fill me-2"></i>Administrative Functions</h5>
+                </div>
+                <div class="card-body-custom">
+                    <p class="text-muted mb-4">Manage your educational institution with comprehensive tools and insights.</p>
+                    <div class="d-grid gap-3">
+                        <a href="{% url 'register_course' %}" class="btn btn-primary-custom btn-custom">
+                            <i class="bi bi-plus-circle-fill me-2"></i>Register New Course
+                        </a>
+                        <a href="/admin/" target="_blank" class="btn btn-outline-primary">
+                            <i class="bi bi-speedometer2 me-2"></i>Django Admin Panel
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6 mb-4" data-aos="fade-left">
+            <div class="card-custom h-100">
+                <div class="card-header-custom" style="background: var(--success-gradient);">
+                    <h5 class="mb-0"><i class="bi bi-bar-chart-line-fill me-2"></i>System Overview</h5>
+                </div>
+                <div class="card-body-custom">
+                    <p class="text-muted mb-4">Monitor system performance and user engagement metrics.</p>
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <h4 class="text-success">95%</h4>
+                            <small class="text-muted">Response Rate</small>
+                        </div>
+                        <div class="col-6">
+                            <h4 class="text-info">4.2/5</h4>
+                            <small class="text-muted">Satisfaction</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    {% elif is_lecturer %}
+        <!-- Lecturer Actions -->
+        <div class="col-lg-6 mb-4" data-aos="fade-right">
+            <div class="card-custom h-100">
+                <div class="card-header-custom">
+                    <h5 class="mb-0"><i class="bi bi-graph-up-arrow me-2"></i>Feedback Analytics</h5>
+                </div>
+                <div class="card-body-custom">
+                    <p class="text-muted mb-4">Access detailed reports and insights about your teaching performance.</p>
+                    <div class="d-grid gap-3">
+                        <a href="{% url 'lecturer_report' %}" class="btn btn-success-custom btn-custom">
+                            <i class="bi bi-bar-chart-fill me-2"></i>View Detailed Reports
+                        </a>
+                        <div class="btn-group w-100" role="group">
+                            <a href="{% url 'export_feedback_csv' %}" class="btn btn-outline-success">
+                                <i class="bi bi-file-earmark-spreadsheet me-1"></i>CSV
+                            </a>
+                            <a href="{% url 'export_feedback_pdf' %}" class="btn btn-outline-danger">
+                                <i class="bi bi-file-earmark-pdf me-1"></i>PDF
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6 mb-4" data-aos="fade-left">
+            <div class="card-custom h-100">
+                <div class="card-header-custom" style="background: var(--warning-gradient);">
+                    <h5 class="mb-0"><i class="bi bi-lightbulb-fill me-2"></i>Quick Insights</h5>
+                </div>
+                <div class="card-body-custom">
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Teaching Clarity</span>
+                            <span class="badge-custom bg-primary">4.3/5</span>
+                        </div>
+                        <div class="progress mt-2" style="height: 8px;">
+                            <div class="progress-bar bg-primary" style="width: 86%"></div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Student Engagement</span>
+                            <span class="badge-custom bg-success">4.1/5</span>
+                        </div>
+                        <div class="progress mt-2" style="height: 8px;">
+                            <div class="progress-bar bg-success" style="width: 82%"></div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Course Effectiveness</span>
+                            <span class="badge-custom bg-info">4.5/5</span>
+                        </div>
+                        <div class="progress mt-2" style="height: 8px;">
+                            <div class="progress-bar bg-info" style="width: 90%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    {% else %}
+        <!-- Student Actions -->
+        <div class="col-lg-8 mb-4" data-aos="fade-right">
+            <div class="card-custom h-100">
+                <div class="card-header-custom">
+                    <h5 class="mb-0"><i class="bi bi-chat-quote-fill me-2"></i>Share Your Experience</h5>
+                </div>
+                <div class="card-body-custom">
+                    <p class="text-muted mb-4">Your feedback is valuable! Help us improve the quality of education by sharing your thoughts about courses and teaching methods. Your responses are completely anonymous.</p>
+                    <a href="{% url 'submit_feedback' %}" class="btn btn-primary-custom btn-custom btn-lg">
+                        <i class="bi bi-pencil-square me-2"></i>Submit Course Feedback
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 mb-4" data-aos="fade-left">
+            <div class="card-custom h-100">
+                <div class="card-header-custom" style="background: var(--success-gradient);">
+                    <h5 class="mb-0"><i class="bi bi-info-circle-fill me-2"></i>Your Impact</h5>
+                </div>
+                <div class="card-body-custom">
+                    <div class="text-center">
+                        <div class="mb-3">
+                            <i class="bi bi-heart-fill text-danger" style="font-size: 2rem;"></i>
+                        </div>
+                        <p class="text-muted small mb-0">Your feedback helps improve education for thousands of students worldwide.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if not user.lecturer %}
+        <div class="col-12" data-aos="fade-up" data-aos-delay="200">
+            <div class="card-custom">
+                <div class="card-body-custom">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h6 class="fw-bold mb-2"><i class="bi bi-mortarboard-fill me-2"></i>Are you an educator?</h6>
+                            <p class="text-muted mb-md-0">Join our community of educators and gain access to powerful feedback analytics and reporting tools.</p>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <a href="{% url 'register_lecturer' %}" class="btn btn-outline-primary">
+                                <i class="bi bi-arrow-right-circle me-2"></i>Register as Lecturer
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}
