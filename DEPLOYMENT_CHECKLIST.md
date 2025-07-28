@@ -27,12 +27,34 @@
 
 ## 🚀 Deployment Platform
 
-### Heroku
-- [ ] Install Heroku CLI
-- [ ] Create Heroku app
-- [ ] Add PostgreSQL addon
+### Render (100% FREE - Recommended)
+- [ ] Create GitHub repository
+- [ ] Create Render account (free)
+- [ ] Create PostgreSQL database (free)
+- [ ] Create web service (free)
 - [ ] Set environment variables
-- [ ] Deploy with Git
+- [ ] Deploy and test
+
+### PythonAnywhere (100% FREE)
+- [ ] Create PythonAnywhere account
+- [ ] Upload code via Git/Files
+- [ ] Configure web app
+- [ ] Set up virtual environment
+- [ ] Configure WSGI file
+
+### Railway (Credit-based - $5/month free credits)
+- [ ] Install Railway CLI (`npm install -g @railway/cli`)
+- [ ] Create Railway account
+- [ ] Initialize project (`railway init`)
+- [ ] Add PostgreSQL database
+- [ ] Deploy with Git (`railway up`)
+
+### Heroku (Now Paid)
+- [x] ~~Install Heroku CLI~~ (Not using - paid service)
+- [x] ~~Create Heroku app~~
+- [x] ~~Add PostgreSQL addon~~
+- [x] ~~Set environment variables~~
+- [x] ~~Deploy with Git~~
 
 ### DigitalOcean
 - [ ] Create App Platform project

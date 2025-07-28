@@ -1,0 +1,38 @@
+# Heroku Deployment Commands for EduFeedback System
+# Run these commands after installing Heroku CLI
+
+# 1. Login to Heroku
+heroku login
+
+# 2. Create a new Heroku app (replace 'your-app-name' with your desired name)
+heroku create edufeedback-system-demo
+
+# 3. Set environment variables
+heroku config:set SECRET_KEY="typaagmqynzp!v*7+52n6z6&dr*ey+osr3$0c3jnda9y!l0tz2"
+heroku config:set DEBUG=False
+heroku config:set ALLOWED_HOSTS="edufeedback-system-demo.herokuapp.com"
+heroku config:set CSRF_TRUSTED_ORIGINS="https://edufeedback-system-demo.herokuapp.com"
+
+# 4. Add PostgreSQL database addon
+heroku addons:create heroku-postgresql:hobby-dev
+
+# 5. Deploy to Heroku
+git push heroku main
+
+# 6. Run database migrations
+heroku run python manage.py migrate
+
+# 7. Create superuser account
+heroku run python manage.py createsuperuser
+
+# 8. Collect static files
+heroku run python manage.py collectstatic --noinput
+
+# 9. Open your deployed app
+heroku open
+
+# Optional: View logs
+heroku logs --tail
+
+# Optional: Set up demo data
+heroku run python manage.py setup_demo_data --create-admin --create-lecturers --create-courses

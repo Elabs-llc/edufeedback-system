@@ -1,0 +1,40 @@
+# Railway Deployment Commands for EduFeedback System
+
+# 1. Install Railway CLI
+npm install -g @railway/cli
+
+# 2. Login to Railway
+railway login
+
+# 3. Initialize Railway project
+railway init
+
+# 4. Add PostgreSQL database
+railway add postgresql
+
+# 5. Set environment variables
+railway variables set SECRET_KEY="typaagmqynzp!v*7+52n6z6&dr*ey+osr3$0c3jnda9y!l0tz2"
+railway variables set DEBUG=False
+railway variables set ALLOWED_HOSTS="your-app-name.up.railway.app"
+railway variables set CSRF_TRUSTED_ORIGINS="https://your-app-name.up.railway.app"
+
+# 6. Deploy to Railway
+railway up
+
+# 7. Run migrations (after first deployment)
+railway run python manage.py migrate
+
+# 8. Create superuser
+railway run python manage.py createsuperuser
+
+# 9. Collect static files
+railway run python manage.py collectstatic --noinput
+
+# 10. View your deployed app
+railway open
+
+# Optional: View logs
+railway logs
+
+# Optional: Set up demo data
+railway run python manage.py setup_demo_data --create-admin --create-lecturers --create-courses

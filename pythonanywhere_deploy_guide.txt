@@ -1,0 +1,65 @@
+# PythonAnywhere Deployment Guide for EduFeedback System
+
+## Step 1: Create Account
+1. Go to https://www.pythonanywhere.com
+2. Create a free "Beginner" account
+
+## Step 2: Upload Your Code
+1. Use the Files tab to upload your project
+2. Or clone from GitHub using console:
+   git clone https://github.com/yourusername/your-repo.git
+
+## Step 3: Create Virtual Environment
+In PythonAnywhere console:
+```bash
+cd edufeedback-system
+python3.10 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+## Step 4: Configure Web App
+1. Go to Web tab
+2. Create new web app
+3. Choose "Manual configuration"
+4. Select Python 3.10
+
+## Step 5: Configure WSGI File
+Edit /var/www/yourusername_pythonanywhere_com_wsgi.py:
+```python
+import os
+import sys
+
+# Add your project directory to sys.path
+path = '/home/yourusername/edufeedback-system'
+if path not in sys.path:
+    sys.path.insert(0, path)
+
+# Set environment variables
+os.environ['DJANGO_SETTINGS_MODULE'] = 'feedback_system.settings'
+os.environ['SECRET_KEY'] = 'typaagmqynzp!v*7+52n6z6&dr*ey+osr3$0c3jnda9y!l0tz2'
+os.environ['DEBUG'] = 'False'
+os.environ['ALLOWED_HOSTS'] = 'yourusername.pythonanywhere.com'
+
+# Import Django application
+from django.core.wsgi import get_wsgi_application
+application = get_wsgi_application()
+```
+
+## Step 6: Configure Static Files
+In Web tab:
+- URL: /static/
+- Directory: /home/yourusername/edufeedback-system/staticfiles/
+
+## Step 7: Set up Database
+In console:
+```bash
+cd edufeedback-system
+source venv/bin/activate
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py collectstatic
+```
+
+## Step 8: Reload Web App
+Click "Reload" button in Web tab

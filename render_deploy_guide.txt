@@ -1,0 +1,36 @@
+# Render Deployment Guide for EduFeedback System
+
+## Step 1: Prepare Your Repository
+1. Push your code to GitHub
+2. Create a Render account at https://render.com
+
+## Step 2: Create Web Service
+1. Go to Render Dashboard
+2. Click "New" -> "Web Service"
+3. Connect your GitHub repository
+4. Select your repository
+
+## Step 3: Configure Build Settings
+- **Name**: edufeedback-system
+- **Environment**: Python 3
+- **Build Command**: pip install -r requirements.txt
+- **Start Command**: gunicorn feedback_system.wsgi:application
+
+## Step 4: Set Environment Variables
+Add these in Render dashboard:
+- SECRET_KEY = typaagmqynzp!v*7+52n6z6&dr*ey+osr3$0c3jnda9y!l0tz2
+- DEBUG = False
+- ALLOWED_HOSTS = your-app-name.onrender.com
+- CSRF_TRUSTED_ORIGINS = https://your-app-name.onrender.com
+
+## Step 5: Add PostgreSQL Database
+1. Create new PostgreSQL database in Render
+2. Copy the DATABASE_URL to your environment variables
+
+## Step 6: Deploy
+1. Click "Create Web Service"
+2. Wait for build to complete
+3. Run commands via Render Shell:
+   - python manage.py migrate
+   - python manage.py createsuperuser
+   - python manage.py collectstatic --noinput
