@@ -19,3 +19,4 @@ echo "🔧 Setting up production environment..."
 python manage.py setup_production
 
 echo "✅ Build completed successfully!"
+echo "🌟 Your EduFeedback System is ready!"
