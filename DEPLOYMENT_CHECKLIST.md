@@ -34,8 +34,9 @@
 - [x] Create web service (free) ✅
 - [x] Set environment variables ✅
 - [x] Deploy and test ✅ **LIVE: https://edufeedback-system.onrender.com**
-- [ ] **TROUBLESHOOTING**: Fix login Server Error (500) - redeploy needed
-- [ ] **DEBUG**: Run `python manage.py debug_login` after redeploy
+- [ ] **🔧 URGENT FIX**: Manual redeploy with comprehensive database fixes
+- [ ] **🔍 TEST**: Check health endpoint: `/health/`
+- [ ] **🔐 VERIFY**: Test login with admin/admin123
 
 ### PythonAnywhere (100% FREE)
 - [ ] Create PythonAnywhere account
