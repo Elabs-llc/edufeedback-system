@@ -5,6 +5,7 @@ from . import views
 
 urlpatterns = [
     path('', views.dashboard, name='dashboard'),  # Changed from 'home' to 'dashboard'
+    path('health/', views.health_check, name='health_check'),  # Health check for debugging
     path('submit-feedback/', views.submit_feedback, name='submit_feedback'),
     path('submit-feedback/<int:course_id>/', views.submit_feedback, name='submit_feedback'),
     path('lecturer-report/', views.lecturer_report, name='lecturer_report'),

@@ -2,7 +2,7 @@ import csv
 from django.db import IntegrityError
 from django.db import models
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from .forms import AdminRegistrationForm, CourseForm, FeedbackForm, LecturerRegistrationForm, LecturerSignupForm, StudentRegistrationForm
 from .models import Feedback, Course, Lecturer
 from django.contrib.auth.models import User
@@ -12,6 +12,37 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django.contrib.auth import login
+
+def health_check(request):
+    """Health check endpoint for debugging"""
+    try:
+        # Check database
+        user_count = User.objects.count()
+        admin_count = User.objects.filter(is_superuser=True).count()
+        
+        # Check if admin user exists
+        admin_exists = User.objects.filter(username='admin').exists()
+        
+        data = {
+            'status': 'healthy',
+            'database': 'connected',
+            'users_total': user_count,
+            'admins_total': admin_count,
+            'admin_user_exists': admin_exists,
+            'debug_info': {
+                'path': request.path,
+                'method': request.method,
+                'user_authenticated': request.user.is_authenticated if hasattr(request, 'user') else False
+            }
+        }
+        
+        return JsonResponse(data)
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'error': str(e),
+            'database': 'disconnected'
+        }, status=500)
 
 def get_user_role(user):
     """Utility function to determine user role"""
