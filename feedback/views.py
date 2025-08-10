@@ -379,7 +379,8 @@ def lecturer_signup(request):
                 user = form.save()
                 login(request, user)
                 messages.success(request, "Lecturer account created and logged in!")
-                return redirect('lecturer_dashboard')
+                # return redirect('lecturer_dashboard')
+                return redirect('dashboard')
             except IntegrityError:
                 form.add_error('username', 'This username is already taken. Please choose another.')
     else:
