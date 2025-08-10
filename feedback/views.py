@@ -234,9 +234,17 @@ def register_student(request):
     if request.method == 'POST':
         form = StudentRegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            messages.success(request, 'Student registered successfully.')
-            return redirect('login')
+            print("Form is valid, attempting to save user.")
+            try:
+                user = form.save()
+                print("User saved successfully.")
+                messages.success(request, 'Student registered successfully.')
+                return redirect('login')
+            except Exception as e:
+                print(f"Error saving user: {e}")
+                messages.error(request, 'An unexpected error occurred. Please try again.')
+                # Optionally, re-render the form with an error
+                return render(request, 'registration/register_student.html', {'form': form})
     else:
         form = StudentRegistrationForm()
     
