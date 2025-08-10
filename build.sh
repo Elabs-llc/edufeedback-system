@@ -18,7 +18,7 @@ python manage.py collectstatic --noinput
 
 # Apply database migrations
 echo "🗄️ Applying database migrations..."
-python manage.py migrate --verbosity 3
+python manage.py migrate
 
 # Create superuser from environment variables
 # This is safe because the script will only run once on build
