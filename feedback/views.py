@@ -233,24 +233,29 @@ def dashboard(request):
 def register_student(request):
     if request.method == 'POST':
         print("Received POST request for student registration.")
-        form = StudentRegistrationForm(request.POST)
-        if form.is_valid():
-            print("Form is valid, attempting to save user.")
-            try:
-                user = form.save()
-                print("User saved successfully.")
-                messages.success(request, 'Student registered successfully.')
-                return redirect('login')
-            except Exception as e:
-                print(f"Error saving user: {e}")
-                messages.error(request, 'An unexpected error occurred. Please try again.')
+        try:
+            form = StudentRegistrationForm(request.POST)
+            if form.is_valid():
+                print("Form is valid, attempting to save user.")
+                try:
+                    user = form.save()
+                    print("User saved successfully.")
+                    messages.success(request, 'Student registered successfully.')
+                    return redirect('login')
+                except Exception as e:
+                    print(f"Error saving user: {e}")
+                    messages.error(request, 'An unexpected error occurred. Please try again.')
+                    return render(request, 'registration/register_student.html', {'form': form})
+            else:
+                print("Form is not valid. Errors:")
+                for field, errors in form.errors.items():
+                    for error in errors:
+                        print(f"- {field}: {error}")
                 return render(request, 'registration/register_student.html', {'form': form})
-        else:
-            print("Form is not valid. Errors:")
-            for field, errors in form.errors.items():
-                for error in errors:
-                    print(f"- {field}: {error}")
-            return render(request, 'registration/register_student.html', {'form': form})
+        except Exception as e:
+            print(f"Error instantiating form: {e}")
+            messages.error(request, 'An unexpected error occurred during form processing.')
+            return redirect('register_student') # Redirect to GET
     else:
         form = StudentRegistrationForm()
     
