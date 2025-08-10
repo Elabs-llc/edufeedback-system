@@ -242,7 +242,7 @@ def register_student(request):
     
     return render(request, 'registration/register_student.html', {'form': form})
 
-# @login_required
+@login_required
 def register_lecturer(request):
     if hasattr(request.user, 'lecturer'):
         messages.info(request, "You are already registered as a lecturer.")
