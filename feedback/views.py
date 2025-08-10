@@ -232,6 +232,7 @@ def dashboard(request):
 
 def register_student(request):
     if request.method == 'POST':
+        print("Received POST request for student registration.")
         form = StudentRegistrationForm(request.POST)
         if form.is_valid():
             print("Form is valid, attempting to save user.")
@@ -243,8 +244,13 @@ def register_student(request):
             except Exception as e:
                 print(f"Error saving user: {e}")
                 messages.error(request, 'An unexpected error occurred. Please try again.')
-                # Optionally, re-render the form with an error
                 return render(request, 'registration/register_student.html', {'form': form})
+        else:
+            print("Form is not valid. Errors:")
+            for field, errors in form.errors.items():
+                for error in errors:
+                    print(f"- {field}: {error}")
+            return render(request, 'registration/register_student.html', {'form': form})
     else:
         form = StudentRegistrationForm()
     
