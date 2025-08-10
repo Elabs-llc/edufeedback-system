@@ -4,9 +4,16 @@ set -o errexit
 
 echo "🚀 Starting build process..."
 
+# Install system dependencies for psycopg2
+apt-get update && apt-get install -y libpq-dev python3-dev
+
 # Install dependencies
 echo "📦 Installing dependencies..."
 pip install -r requirements.txt
+
+# for debugging
+echo "🐍 Pip freeze..."
+pip freeze
 
 # Collect static files
 echo "📁 Collecting static files..."
