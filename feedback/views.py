@@ -230,13 +230,20 @@ def dashboard(request):
     
     return render(request, 'feedback/dashboard.html', context)
 
+from .utils import generate_and_send_otp # Add this import
+
 def register_student(request):
     if request.method == 'POST':
         form = StudentRegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            messages.success(request, 'Student registered successfully.')
-            return redirect('login')
+            user = form.save(commit=False) # Don't save yet
+            user.is_active = False # Deactivate user until OTP is verified
+            user.save() # Now save the user
+
+            generate_and_send_otp(user) # Generate and send OTP
+
+            messages.success(request, 'Student registered successfully. Please check your email for OTP to activate your account.')
+            return redirect('verify_otp') # Redirect to OTP verification page
     else:
         form = StudentRegistrationForm()
     
@@ -376,11 +383,14 @@ def lecturer_signup(request):
         form = LecturerSignupForm(request.POST)
         if form.is_valid():
             try:
-                user = form.save()
-                login(request, user)
-                messages.success(request, "Lecturer account created and logged in!")
-                # return redirect('lecturer_dashboard')
-                return redirect('dashboard')
+                user = form.save(commit=False) # Don't save yet
+                user.is_active = False # Deactivate user until OTP is verified
+                user.save() # Now save the user
+
+                generate_and_send_otp(user) # Generate and send OTP
+
+                messages.success(request, "Lecturer account created. Please check your email for OTP to activate your account.")
+                return redirect('verify_otp') # Redirect to OTP verification page
             except IntegrityError:
                 form.add_error('username', 'This username is already taken. Please choose another.')
     else:
@@ -391,6 +401,8 @@ def lecturer_signup(request):
 
 @login_required
 def lecturer_dashboard(request):
+    print(f"User in lecturer_dashboard: {request.user}")
+    print(f"Has lecturer attribute: {hasattr(request.user, 'lecturer')}")
     return render(request, 'dashboard/lecturer_dashboard.html')
 
 @login_required
