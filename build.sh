@@ -12,28 +12,35 @@ pip install -r requirements.txt
 echo "📁 Collecting static files..."
 python manage.py collectstatic --noinput
 
-# Simple database setup - Django standard approach
-echo "🗄️ Setting up database..."
-rm -f db.sqlite3  # Start fresh
-python manage.py makemigrations --verbosity=2
-python manage.py migrate --verbosity=2
+# Apply database migrations
+echo "🗄️ Applying database migrations..."
+python manage.py migrate
 
-# Create superuser directly using environment variables
-echo "👤 Creating admin user..."
+# Create superuser from environment variables
+# This is safe because the script will only run once on build
+echo "👤 Creating or updating admin user..."
 python -c "
-import django
 import os
+import django
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'feedback_system.settings')
 django.setup()
 
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
-# Create admin user if not exists
-if not User.objects.filter(username='admin').exists():
-    User.objects.create_superuser('admin', 'admin@edufeedback.com', 'admin123')
-    print('✅ Admin user created: admin/admin123')
+User = get_user_model()
+
+username = os.getenv('DJANGO_SUPERUSER_USERNAME', 'admin')
+email = os.getenv('DJANGO_SUPERUSER_EMAIL', 'admin@example.com')
+password = os.getenv('DJANGO_SUPERUSER_PASSWORD', 'admin123')
+
+if not User.objects.filter(username=username).exists():
+    print(f'Creating superuser {username}...')
+    User.objects.create_superuser(username, email, password)
+    print('✅ Superuser created.')
 else:
-    print('✅ Admin user already exists')
+    print(f'Superuser {username} already exists.')
+
 "
 
-echo "✅ Build completed successfully!"
+echo "✅ Build finished successfully!"
