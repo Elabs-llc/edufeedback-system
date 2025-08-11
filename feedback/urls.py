@@ -22,5 +22,6 @@ urlpatterns = [
     path('lecturer/export_csv/', views.export_feedback_csv, name='export_feedback_csv'),
     path('lecturer/export_pdf/', views.export_feedback_pdf, name='export_feedback_pdf'),
     path('signup/lecturer/', views.lecturer_signup, name='lecturer_signup'),
+    path('verify-otp/', views.verify_otp, name='verify_otp'), # New OTP verification URL
     path('dashboard/lecturer/', views.lecturer_dashboard, name='lecturer_dashboard'),
 ]

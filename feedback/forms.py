@@ -209,3 +209,11 @@ class StudentRegistrationForm(UserCreationForm):
         if commit:
             user.save()
         return user
+
+class OTPVerificationForm(forms.Form):
+    otp_code = forms.CharField(
+        max_length=6,
+        min_length=6,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter OTP'}),
+        help_text='Enter the 6-digit OTP sent to your email.'
+    )

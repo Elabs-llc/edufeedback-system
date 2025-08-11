@@ -399,6 +399,42 @@ def lecturer_signup(request):
     return render(request, 'registration/signup_lecturer.html', {'form': form})
 
 
+from .forms import OTPVerificationForm
+from .models import OTPVerification
+
+def verify_otp(request):
+    if request.method == 'POST':
+        form = OTPVerificationForm(request.POST)
+        if form.is_valid():
+            otp_code = form.cleaned_data['otp_code']
+            try:
+                # Assuming the user for whom OTP is being verified is the one who just registered
+                # This needs to be handled carefully. For now, let's assume the last registered inactive user.
+                # A more robust solution would involve passing the user ID or username in the session or URL.
+                user = User.objects.get(is_active=False, otpverification__otp_code=otp_code)
+                otp_instance = OTPVerification.objects.get(user=user, otp_code=otp_code)
+
+                if otp_instance.is_expired():
+                    messages.error(request, 'OTP has expired. Please register again to get a new OTP.')
+                    return redirect('register_student') # Or wherever they register
+                
+                user.is_active = True
+                user.save()
+                otp_instance.delete() # OTP used, delete it
+
+                messages.success(request, 'Account activated successfully! You can now log in.')
+                return redirect('login')
+
+            except (User.DoesNotExist, OTPVerification.DoesNotExist):
+                messages.error(request, 'Invalid OTP or user not found.')
+                return render(request, 'registration/verify_otp.html', {'form': form})
+        else:
+            messages.error(request, 'Please enter a valid OTP.')
+    else:
+        form = OTPVerificationForm()
+    return render(request, 'registration/verify_otp.html', {'form': form})
+
+
 @login_required
 def lecturer_dashboard(request):
     print(f"User in lecturer_dashboard: {request.user}")
