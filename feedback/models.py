@@ -62,19 +62,24 @@ class Feedback(models.Model):
         unique_together = ['course', 'student']  # Prevent duplicate feedback from same student
         ordering = ['-submitted_at']
 
-# New model for OTP verification
+# OTP verification
 class OTPVerification(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # allows multiple OTP history
     otp_code = models.CharField(max_length=6)
     created_at = models.DateTimeField(auto_now_add=True)
     expires_at = models.DateTimeField()
+    attempts = models.PositiveSmallIntegerField(default=0)  # to limit retries
 
     def is_expired(self):
         return timezone.now() >= self.expires_at
 
+    def is_valid(self):
+        return (timezone.now() < self.expires_at) and (self.attempts < 5)
+
     def __str__(self):
-        return f"OTP for {self.user.username}"
+        return f"OTP for {self.user.username} (expires {self.expires_at})"
 
     class Meta:
         verbose_name = "OTP Verification"
         verbose_name_plural = "OTP Verifications"
+        ordering = ["-created_at"]

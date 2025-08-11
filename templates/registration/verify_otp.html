@@ -18,18 +18,15 @@
                             </div>
                         {% endfor %}
                     {% endif %}
-                    <p class="text-center">A One-Time Password (OTP) has been sent to your email address. Please enter it below to activate your account.</p>
+                    <p class="text-center">
+                        A One-Time Password (OTP) has been sent to your email address. 
+                        Please enter it below to activate your account.
+                    </p>
                     <form method="post">
                         {% csrf_token %}
                         <div class="mb-3">
-                            <label for="id_otp_code" class="form-label">OTP Code</label>
-                            {{ form.otp_code }}
-                            {% if form.otp_code.help_text %}
-                                <div class="form-text">{{ form.otp_code.help_text }}</div>
-                            {% endif %}
-                            {% for error in form.otp_code.errors %}
-                                <div class="text-danger">{{ error }}</div>
-                            {% endfor %}
+                            <label for="id_otp" class="form-label">OTP Code</label>
+                            <input type="text" name="otp" id="id_otp" class="form-control" placeholder="Enter OTP" maxlength="6" required>
                         </div>
                         <div class="d-grid">
                             <button type="submit" class="btn btn-primary">Verify OTP</button>

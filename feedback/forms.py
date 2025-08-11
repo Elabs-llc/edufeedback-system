@@ -211,7 +211,7 @@ class StudentRegistrationForm(UserCreationForm):
         return user
 
 class OTPVerificationForm(forms.Form):
-    otp_code = forms.CharField(
+    otp = forms.CharField(
         max_length=6,
         min_length=6,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter OTP'}),

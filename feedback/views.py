@@ -1,7 +1,7 @@
 import csv
 from django.db import IntegrityError
 from django.db import models
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from .forms import AdminRegistrationForm, CourseForm, FeedbackForm, LecturerRegistrationForm, LecturerSignupForm, StudentRegistrationForm
 from .models import Feedback, Course, Lecturer
@@ -12,6 +12,8 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django.contrib.auth import login
+from .utils import generate_and_send_otp 
+from .models import OTPVerification
 
 def health_check(request):
     """Health check endpoint for debugging"""
@@ -230,20 +232,23 @@ def dashboard(request):
     
     return render(request, 'feedback/dashboard.html', context)
 
-from .utils import generate_and_send_otp # Add this import
 
 def register_student(request):
     if request.method == 'POST':
         form = StudentRegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False) # Don't save yet
-            user.is_active = False # Deactivate user until OTP is verified
-            user.save() # Now save the user
+            user = form.save(commit=False)
+            user.is_active = False  # Deactivate until OTP verified
+            user.save()
 
-            generate_and_send_otp(user) # Generate and send OTP
-
-            messages.success(request, 'Student registered successfully. Please check your email for OTP to activate your account.')
-            return redirect('verify_otp') # Redirect to OTP verification page
+            try:
+                generate_and_send_otp(user)
+                request.session['pending_user_id'] = user.id  # store in session
+                messages.success(request, 'Student registered successfully. Please check your email for OTP.')
+                return redirect('verify_otp')
+            except Exception as e:
+                messages.error(request, f"Could not send OTP email: {str(e)}")
+                user.delete()  # delete if OTP can't be sent
     else:
         form = StudentRegistrationForm()
     
@@ -383,56 +388,25 @@ def lecturer_signup(request):
         form = LecturerSignupForm(request.POST)
         if form.is_valid():
             try:
-                user = form.save(commit=False) # Don't save yet
-                user.is_active = False # Deactivate user until OTP is verified
-                user.save() # Now save the user
+                user = form.save(commit=False)
+                user.is_active = False  # Deactivate until OTP verified
+                user.save()
 
-                generate_and_send_otp(user) # Generate and send OTP
+                try:
+                    generate_and_send_otp(user)
+                    request.session['pending_user_id'] = user.id  # store in session
+                    messages.success(request, "Lecturer account created. Please check your email for the OTP.")
+                    return redirect('verify_otp')
+                except Exception as e:
+                    messages.error(request, f"Could not send OTP email: {str(e)}")
+                    user.delete()  # clean up if email fails
 
-                messages.success(request, "Lecturer account created. Please check your email for OTP to activate your account.")
-                return redirect('verify_otp') # Redirect to OTP verification page
             except IntegrityError:
-                form.add_error('username', 'This username is already taken. Please choose another.')
+                form.add_error('username', 'This username is already taken.')
     else:
         form = LecturerSignupForm()
-    
+
     return render(request, 'registration/signup_lecturer.html', {'form': form})
-
-
-from .forms import OTPVerificationForm
-from .models import OTPVerification
-
-def verify_otp(request):
-    if request.method == 'POST':
-        form = OTPVerificationForm(request.POST)
-        if form.is_valid():
-            otp_code = form.cleaned_data['otp_code']
-            try:
-                # Assuming the user for whom OTP is being verified is the one who just registered
-                # This needs to be handled carefully. For now, let's assume the last registered inactive user.
-                # A more robust solution would involve passing the user ID or username in the session or URL.
-                user = User.objects.get(is_active=False, otpverification__otp_code=otp_code)
-                otp_instance = OTPVerification.objects.get(user=user, otp_code=otp_code)
-
-                if otp_instance.is_expired():
-                    messages.error(request, 'OTP has expired. Please register again to get a new OTP.')
-                    return redirect('register_student') # Or wherever they register
-                
-                user.is_active = True
-                user.save()
-                otp_instance.delete() # OTP used, delete it
-
-                messages.success(request, 'Account activated successfully! You can now log in.')
-                return redirect('login')
-
-            except (User.DoesNotExist, OTPVerification.DoesNotExist):
-                messages.error(request, 'Invalid OTP or user not found.')
-                return render(request, 'registration/verify_otp.html', {'form': form})
-        else:
-            messages.error(request, 'Please enter a valid OTP.')
-    else:
-        form = OTPVerificationForm()
-    return render(request, 'registration/verify_otp.html', {'form': form})
 
 
 @login_required
@@ -557,3 +531,43 @@ def view_feedback_results(request, course_id):
     except Course.DoesNotExist:
         messages.error(request, 'Course not found.')
         return redirect('course_list')
+    
+
+
+def verify_otp(request):
+    pending_user_id = request.session.get('pending_user_id')
+
+    if not pending_user_id:
+        messages.error(request, "No pending verification found. Please register again.")
+        return redirect('register_student')  # or your signup page
+
+    user = get_object_or_404(User, id=pending_user_id)
+
+    if request.method == 'POST':
+        otp_entered = request.POST.get('otp', '').strip()
+
+        try:
+            otp_record = OTPVerification.objects.get(user=user)
+        except OTPVerification.DoesNotExist:
+            messages.error(request, "No OTP found for this account. Please register again.")
+            return redirect('register_student')
+
+        if otp_record.is_expired():
+            messages.error(request, "Your OTP has expired. Please register again.")
+            otp_record.delete()
+            user.delete()
+            return redirect('register_student')
+
+        if otp_entered == otp_record.otp_code:
+            # OTP valid — activate account
+            user.is_active = True
+            user.save()
+            otp_record.delete()
+            del request.session['pending_user_id']  # cleanup session
+
+            messages.success(request, "Your account has been activated. You can now log in.")
+            return redirect('login')
+        else:
+            messages.error(request, "Invalid OTP. Please try again.")
+
+    return render(request, 'registration/verify_otp.html', {'pending_user': user})
