@@ -8,7 +8,7 @@ class LecturerInline(admin.StackedInline):
     model = Lecturer
     can_delete = False
     verbose_name_plural = 'Lecturer Profile'
-    fk_name = 'user'
+    fk_name = 'user' 
 
 class CustomUserAdmin(BaseUserAdmin):
     inlines = (LecturerInline,)

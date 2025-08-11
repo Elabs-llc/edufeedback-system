@@ -16,12 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from feedback import views as feedback_views
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('feedback.urls')),  # feedback app URLs
-    path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
+    path('', include('feedback.urls')),
+    path('login/', feedback_views.login_view, name='login'),
     path('logout/', auth_views.LogoutView.as_view(
         template_name='registration/logout.html',
         next_page='/login/'

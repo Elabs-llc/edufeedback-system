@@ -14,6 +14,8 @@ from xhtml2pdf import pisa
 from django.contrib.auth import login
 from .utils import generate_and_send_otp 
 from .models import OTPVerification
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import authenticate, login
 
 def health_check(request):
     """Health check endpoint for debugging"""
@@ -571,3 +573,21 @@ def verify_otp(request):
             messages.error(request, "Invalid OTP. Please try again.")
 
     return render(request, 'registration/verify_otp.html', {'pending_user': user})
+
+
+def login_view(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            if not user.is_active:
+                messages.error(request, "Your account is not activated. Please verify your email.")
+                return redirect('verify_otp')  # send to OTP page
+            login(request, user)
+            return redirect('/')  # LOGIN_REDIRECT_URL
+        else:
+            messages.error(request, "Invalid username or password.")
+    else:
+        form = AuthenticationForm()
+    
+    return render(request, 'registration/login.html', {'form': form}) 
