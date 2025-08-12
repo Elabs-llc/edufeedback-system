@@ -60,3 +60,4 @@ def generate_and_send_otp(user, length: int = 6, ttl_minutes: int = 5, min_secon
         raise
 
     return otp_code
+#  Could not send OTP email: column feedback_otpverification.attempts does not exist LINE 1: ...ted_at", "feedback_otpverification"."expires_at", "feedback_... ^
