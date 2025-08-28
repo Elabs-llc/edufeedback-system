@@ -4,7 +4,7 @@ from django.db import models
 from django.shortcuts import render, redirect,get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from .forms import AdminRegistrationForm, CourseForm, FeedbackForm, LecturerRegistrationForm, LecturerSignupForm, StudentRegistrationForm
-from .models import Feedback, Course, Lecturer
+from .models import Feedback, Course, Lecturer, Student
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -299,7 +299,7 @@ def register_student(request):
     if request.method == 'POST':
         form = StudentRegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)
+            user = form.save()
             user.is_active = False  # Deactivate until OTP verified
             user.save()
 
@@ -506,6 +506,32 @@ def lecturer_signup(request):
 
 #     return render(request, 'registration/signup_lecturer.html', {'form': form})
 
+@login_required
+def student_course_results(request):
+    # Only students can access this page
+    if request.user.is_staff or hasattr(request.user, 'lecturer'):
+        messages.warning(request, 'This page is for students only.')
+        return redirect('dashboard')
+
+    # Get the courses for which the student has submitted feedback
+    courses_reviewed_ids = Feedback.objects.filter(student=request.user).values_list('course_id', flat=True)
+    
+    # Get the course objects
+    courses = Course.objects.filter(id__in=courses_reviewed_ids)
+
+    # Annotate each course with its overall average ratings from ALL students
+    courses_with_avg_ratings = courses.annotate(
+        avg_clarity=Avg('feedback__clarity_rating'),
+        avg_engagement=Avg('feedback__engagement_rating'),
+        avg_effectiveness=Avg('feedback__effectiveness_rating')
+    ).order_by('code')
+
+    context = {
+        'courses_data': courses_with_avg_ratings
+    }
+    
+    # This view will render a new template you need to create
+    return render(request, 'feedback/student_course_results.html', context)
 
 @login_required
 def course_list(request):
@@ -525,18 +551,52 @@ def course_list(request):
     
     return render(request, 'course_list.html', {'courses_data': courses_with_feedback})
 
+# @login_required
+# def available_courses(request):
+#     """Display all available courses for students to enroll in"""
+#     if request.user.is_staff or hasattr(request.user, 'lecturer'):
+#         messages.warning(request, 'Only students can view available courses.')
+#         return redirect('dashboard')
+    
+#     # Get all courses excluding those the user is already enrolled in
+#     enrolled_course_ids = request.user.enrolled_courses.values_list('id', flat=True)
+#     available_courses = Course.objects.exclude(id__in=enrolled_course_ids).order_by('code')
+    
+#     return render(request, 'feedback/available_courses.html', {'courses': available_courses})
+
 @login_required
 def available_courses(request):
-    """Display all available courses for students to enroll in"""
+    """Display available courses from the student's department"""
     if request.user.is_staff or hasattr(request.user, 'lecturer'):
         messages.warning(request, 'Only students can view available courses.')
         return redirect('dashboard')
+
+    # --- THIS IS THE UPDATED LOGIC ---
+    try:
+        # Get the current student's department from their profile
+        student_department = request.user.student.department
+
+        # Get all courses the user is already enrolled in
+        enrolled_course_ids = request.user.enrolled_courses.values_list('id', flat=True)
+        
+        # Filter courses by the student's department and exclude enrolled ones
+        available_courses = Course.objects.filter(
+            lecturer__department=student_department
+        ).exclude(id__in=enrolled_course_ids).order_by('code')
+
+    except Student.DoesNotExist:
+        # This handles cases where a user might not have a student profile
+        # (e.g., an old account created before this change)
+        messages.error(request, 'Your student profile is incomplete. Please contact an administrator.')
+        available_courses = Course.objects.none() # Return no courses
+
+    context = {
+        'courses': available_courses,
+        'user_role': get_user_role(request.user), # Pass role for template if needed
+        'role_badge_class': get_user_role_badge_class(request.user) # Pass badge class
+    }
     
-    # Get all courses excluding those the user is already enrolled in
-    enrolled_course_ids = request.user.enrolled_courses.values_list('id', flat=True)
-    available_courses = Course.objects.exclude(id__in=enrolled_course_ids).order_by('code')
-    
-    return render(request, 'feedback/available_courses.html', {'courses': available_courses})
+    return render(request, 'feedback/available_courses.html', context)
 
 @login_required
 def enroll_course(request, course_id):

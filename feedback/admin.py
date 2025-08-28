@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import Lecturer, Course, Feedback
+from .models import Lecturer, Course, Feedback, Student
 
 # Customize User Admin
 class LecturerInline(admin.StackedInline):
@@ -76,6 +76,21 @@ class FeedbackAdmin(admin.ModelAdmin):
     
     def has_delete_permission(self, request, obj=None):
         return request.user.is_superuser
+
+
+@admin.register(Student)
+class StudentAdmin(admin.ModelAdmin):
+    list_display = ('student_name', 'department', 'created_at')
+    search_fields = ('user__username', 'user__first_name', 'user__last_name', 'department')
+    list_filter = ('department',)
+    readonly_fields = ('created_at',)
+
+    def student_name(self, obj):
+        return obj.user.get_full_name() or obj.user.username
+    student_name.short_description = 'Student Name'
+    student_name.admin_order_field = 'user__first_name'
+
+
 
 # Customize admin site
 admin.site.site_header = "Feedback System Administration"

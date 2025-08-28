@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %} {# <-- LOAD THE NEW FILTER #}
+
+{% block title %}Course Feedback Results - EduFeedback System{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-5" data-aos="fade-down">
+        <div class="col">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+                <div>
+                    <h1 class="display-6 fw-bold mb-2" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+                        <i class="bi bi-bar-chart-steps me-3"></i>Collective Course Results
+                    </h1>
+                    <p class="text-muted">Here are the anonymized, average feedback results for the courses you have reviewed.</p>
+                </div>
+                <div class="mt-3 mt-md-0">
+                    <a href="{% url 'dashboard' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-arrow-left-circle me-2"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if courses_data %}
+        <div class="row">
+            {% for course in courses_data %}
+                {# --- THIS IS THE FIX --- #}
+                <div class="col-lg-6 col-xl-4 mb-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|multiply:100 }}">
+                    <div class="card-custom h-100">
+                        <div class="card-header-custom">
+                            <h5 class="mb-0 fw-bold">{{ course.name }}</h5>
+                            <small class="text-muted">{{ course.code }}</small>
+                        </div>
+                        <div class="card-body-custom">
+                            <p class="small text-muted mb-4">
+                                Taught by: {{ course.lecturer.user.get_full_name|default:course.lecturer.user.username }}
+                            </p>
+
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fw-500">Clarity</span>
+                                    <span class="badge-custom bg-primary">{{ course.avg_clarity|floatformat:1 }}/5</span>
+                                </div>
+                                <div class="progress mt-2" style="height: 6px;">
+                                    <div class="progress-bar bg-primary" style="width: {% widthratio course.avg_clarity 5 100 %}%"></div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fw-500">Engagement</span>
+                                    <span class="badge-custom bg-success">{{ course.avg_engagement|floatformat:1 }}/5</span>
+                                </div>
+                                <div class="progress mt-2" style="height: 6px;">
+                                    <div class="progress-bar bg-success" style="width: {% widthratio course.avg_engagement 5 100 %}%"></div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fw-500">Effectiveness</span>
+                                    <span class="badge-custom bg-info">{{ course.avg_effectiveness|floatformat:1 }}/5</span>
+                                </div>
+                                <div class="progress mt-2" style="height: 6px;">
+                                    <div class="progress-bar bg-info" style="width: {% widthratio course.avg_effectiveness 5 100 %}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+    {% else %}
+        <div class="card-custom" data-aos="zoom-in">
+            <div class="card-body-custom text-center py-5">
+                <div class="mb-4">
+                    <i class="bi bi-clipboard-x text-muted" style="font-size: 5rem; opacity: 0.3;"></i>
+                </div>
+                <h3 class="fw-bold text-muted mb-3">No Results to Display Yet</h3>
+                <p class="lead text-muted mb-4">You haven't submitted feedback for any courses. Once you review a course, its collective results will appear here.</p>
+                <a href="{% url 'course_list' %}" class="btn btn-primary-custom btn-custom">
+                    <i class="bi bi-pencil-square me-2"></i>Submit Feedback Now
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

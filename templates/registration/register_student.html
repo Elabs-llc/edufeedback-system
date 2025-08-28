@@ -59,6 +59,8 @@
                                         {% endif %}
                                     </div>
                                 </div>
+
+                                
                                 <div class="col-md-6">
                                     <div class="form-floating mb-3">
                                         {% render_field form.last_name class="form-control" placeholder="Last Name" %}
@@ -72,6 +74,18 @@
                                         {% endif %}
                                     </div>
                                 </div>
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                {% render_field form.department class="form-control" placeholder="Department" %}
+                                <label for="{{ form.department.id_for_label }}">
+                                    <i class="bi bi-building me-2"></i>Department
+                                </label>
+                                {% if form.department.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.department.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
                             </div>
 
                             <!-- Account Information -->
@@ -153,18 +167,7 @@
                     </div>
                 </div>
 
-                <!-- Other Registration Options -->
-                <div class="mt-4 text-center">
-                    <small class="text-muted">Register as:</small>
-                    <div class="mt-2">
-                        <a href="{% url 'register_lecturer' %}" class="btn btn-outline-secondary btn-sm me-2">
-                            <i class="bi bi-person-workspace me-1"></i>Lecturer
-                        </a>
-                        <a href="{% url 'register_admin' %}" class="btn btn-outline-secondary btn-sm">
-                            <i class="bi bi-shield-check me-1"></i>Admin
-                        </a>
-                    </div>
-                </div>
+                
             </div>
         </div>
 

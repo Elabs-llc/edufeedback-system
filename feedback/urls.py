@@ -24,5 +24,6 @@ urlpatterns = [
     path('signup/lecturer/', views.lecturer_signup, name='lecturer_signup'),
     path('verify-otp/', views.verify_otp, name='verify_otp'), # New OTP verification URL
     path('dashboard/', views.dashboard, name='dashboard'),
+    path('course-results/', views.student_course_results, name='student_course_results'),
     # path('dashboard/lecturer/', views.lecturer_dashboard, name='lecturer_dashboard'),
 ]

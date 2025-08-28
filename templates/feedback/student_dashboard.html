@@ -115,15 +115,21 @@
     <div class="col-12" data-aos="fade-up" data-aos-delay="200">
         <div class="card-custom">
             <div class="card-body-custom">
-                <div class="row align-items-center">
-                    <div class="col-md-8">
-                        <h6 class="fw-bold mb-2"><i class="bi bi-mortarboard-fill me-2"></i>Are you an educator?</h6>
-                        <p class="text-muted mb-md-0">Join our community and gain access to powerful feedback analytics.</p>
-                    </div>
-                    <div class="col-md-4 text-md-end">
-                        <a href="{% url 'register_lecturer' %}" class="btn btn-outline-primary">
-                            <i class="bi bi-arrow-right-circle me-2"></i>Register as Lecturer
-                        </a>
+               <div class="col-12" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card-custom">
+                        <div class="card-body-custom">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h6 class="fw-bold mb-2"><i class="bi bi-bar-chart-line-fill me-2"></i>See The Impact of Your Feedback</h6>
+                                    <p class="text-muted mb-md-0">View the collective, anonymized feedback results for courses you have reviewed.</p>
+                                </div>
+                                <div class="col-md-4 text-md-end">
+                                    <a href="{% url 'student_course_results' %}" class="btn btn-outline-primary">
+                                        <i class="bi bi-arrow-right-circle me-2"></i>View Course Results
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

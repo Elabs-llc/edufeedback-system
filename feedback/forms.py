@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from .models import Course, Feedback, Lecturer
+from .models import Course, Feedback, Lecturer, Student
 
 class FeedbackForm(forms.ModelForm):
     class Meta:
@@ -200,6 +200,59 @@ class LecturerSignupForm(forms.ModelForm):
             lecturer.save()
         return user
 
+# class StudentRegistrationForm(UserCreationForm):
+#     first_name = forms.CharField(
+#         max_length=30,
+#         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'})
+#     )
+#     last_name = forms.CharField(
+#         max_length=30,
+#         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'})
+#     )
+#     email = forms.EmailField(
+#         widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email Address'})
+#     )
+
+#     class Meta:
+#         model = User
+#         fields = ('first_name', 'last_name', 'username', 'email', 'password1', 'password2')
+#         widgets = {
+#             'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}),
+#         }
+
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         # Add Bootstrap classes to password fields
+#         self.fields['password1'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Password'})
+#         self.fields['password2'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Confirm Password'})
+#         self.fields['username'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Username'})
+
+    
+#     def clean_username(self):
+#         username = self.cleaned_data['username']
+#         if User.objects.filter(username=username).exists():
+#             raise ValidationError("This username is already taken.")
+#         return username
+
+#     def clean_email(self):
+#         email = self.cleaned_data.get('email')
+#         if User.objects.filter(email=email).exists():
+#             raise ValidationError("This email is already registered.")
+#         return email
+
+
+
+#     def save(self, commit=True):
+#         user = super().save(commit=False)
+#         user.first_name = self.cleaned_data['first_name']
+#         user.last_name = self.cleaned_data['last_name']
+#         user.email = self.cleaned_data['email']
+#         user.is_staff = False  # Ensure students are not staff
+#         if commit:
+#             user.save()
+#         return user
+
+
 class StudentRegistrationForm(UserCreationForm):
     first_name = forms.CharField(
         max_length=30,
@@ -212,22 +265,28 @@ class StudentRegistrationForm(UserCreationForm):
     email = forms.EmailField(
         widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email Address'})
     )
+    
+    # --- 1. ADD THIS NEW DEPARTMENT FIELD ---
+    department = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g., Computer Science'})
+    )
 
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'username', 'email', 'password1', 'password2')
+        # --- 2. ADD 'department' TO THE FIELDS TUPLE ---
+        fields = ('first_name', 'last_name', 'username', 'email', 'department', 'password1', 'password2')
         widgets = {
             'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}),
         }
 
+    # Your __init__ and clean methods can remain the same if you have them.
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Add Bootstrap classes to password fields
         self.fields['password1'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Password'})
         self.fields['password2'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Confirm Password'})
         self.fields['username'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Username'})
 
-    
     def clean_username(self):
         username = self.cleaned_data['username']
         if User.objects.filter(username=username).exists():
@@ -240,18 +299,23 @@ class StudentRegistrationForm(UserCreationForm):
             raise ValidationError("This email is already registered.")
         return email
 
-
-
+    # --- 3. UPDATE THE SAVE METHOD ---
     def save(self, commit=True):
         user = super().save(commit=False)
         user.first_name = self.cleaned_data['first_name']
         user.last_name = self.cleaned_data['last_name']
         user.email = self.cleaned_data['email']
-        user.is_staff = False  # Ensure students are not staff
+        user.is_staff = False
+        
         if commit:
             user.save()
+            # Create the Student profile after the User is saved
+            Student.objects.create(
+                user=user,
+                department=self.cleaned_data['department']
+            )
         return user
-
+    
 class OTPVerificationForm(forms.Form):
     otp = forms.CharField(
         max_length=6,

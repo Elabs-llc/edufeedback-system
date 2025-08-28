@@ -83,3 +83,17 @@ class OTPVerification(models.Model):
         verbose_name = "OTP Verification"
         verbose_name_plural = "OTP Verifications"
         ordering = ["-created_at"]
+
+
+class Student(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    department = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        name = self.user.get_full_name() or self.user.username
+        return f"{name} ({self.department})"
+
+    class Meta:
+        verbose_name = "Student"
+        verbose_name_plural = "Students"
