@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard - EduFeedback System{% endblock %}
+
+{% block content %}
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="card-custom" data-aos="zoom-in">
+            <div class="card-body-custom text-center">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <div class="mb-3">
+                            <span class="badge {{ role_badge_class }} fs-6 px-3 py-2">
+                                <i class="bi bi-shield-check me-2"></i> {{ user_role }}
+                            </span>
+                        </div>
+                        <h1 class="display-4 fw-bold mb-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                            Welcome Back, {{ user.get_full_name|default:user.username }}! 
+                        </h1>
+                        <p class="lead text-muted mb-4">
+                            Manage your educational ecosystem with powerful administrative tools.
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="position-relative">
+                            <i class="bi bi-gear-fill" 
+                               style="font-size: 8rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; opacity: 0.1;"></i>
+                            <div class="position-absolute top-50 start-50 translate-middle">
+                                <div class="bg-white rounded-circle p-4 shadow-lg">
+                                    <i class="bi bi-gear-fill" 
+                                       style="font-size: 3rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-5">
+    <div class="col-md-3 mb-4" data-aos="flip-left" data-aos-delay="100">
+        <div class="card-custom h-100">
+            <div class="card-body-custom text-center">
+                <div class="mb-3">
+                    <div class="bg-primary bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                        <i class="bi bi-people-fill text-white" style="font-size: 1.5rem;"></i>
+                    </div>
+                </div>
+                <h3 class="fw-bold text-primary">{{ total_users }}</h3>
+                <p class="text-muted mb-0">Total Users</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4" data-aos="flip-left" data-aos-delay="200">
+        <div class="card-custom h-100">
+            <div class="card-body-custom text-center">
+                <div class="mb-3">
+                    <div class="bg-success bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                        <i class="bi bi-book-fill text-white" style="font-size: 1.5rem;"></i>
+                    </div>
+                </div>
+                <h3 class="fw-bold text-success">{{ active_courses }}</h3>
+                <p class="text-muted mb-0">Active Courses</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4" data-aos="flip-left" data-aos-delay="300">
+        <div class="card-custom h-100">
+            <div class="card-body-custom text-center">
+                <div class="mb-3">
+                    <div class="bg-info bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                        <i class="bi bi-chat-text-fill text-white" style="font-size: 1.5rem;"></i>
+                    </div>
+                </div>
+                <h3 class="fw-bold text-info">{{ total_feedback }}</h3>
+                <p class="text-muted mb-0">Total Feedback</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4" data-aos="flip-left" data-aos-delay="400">
+        <div class="card-custom h-100">
+            <div class="card-body-custom text-center">
+                <div class="mb-3">
+                    <div class="bg-warning bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                        <i class="bi bi-star-fill text-white" style="font-size: 1.5rem;"></i>
+                    </div>
+                </div>
+                <h3 class="fw-bold text-warning">{{ avg_rating|floatformat:1 }}</h3>
+                <p class="text-muted mb-0">Avg Rating</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6 mb-4" data-aos="fade-right">
+        <div class="card-custom h-100">
+            <div class="card-header-custom">
+                <h5 class="mb-0"><i class="bi bi-gear-fill me-2"></i>Administrative Functions</h5>
+            </div>
+            <div class="card-body-custom">
+                <p class="text-muted mb-4">Manage your educational institution with comprehensive tools and insights.</p>
+                <div class="d-grid gap-3">
+                    <a href="{% url 'register_course' %}" class="btn btn-primary-custom btn-custom">
+                        <i class="bi bi-plus-circle-fill me-2"></i>Register New Course
+                    </a>
+                    <a href="{% url 'register_admin' %}" class="btn btn-secondary-custom btn-custom">
+                        <i class="bi bi-person-plus-fill me-2"></i>Create New Admin
+                    </a>
+                    <a href="/admin/" target="_blank" class="btn btn-outline-primary">
+                        <i class="bi bi-speedometer2 me-2"></i>Full Django Admin Panel
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-6 mb-4" data-aos="fade-left">
+        <div class="card-custom h-100">
+            <div class="card-header-custom" style="background: var(--success-gradient);">
+                <h5 class="mb-0"><i class="bi bi-bar-chart-line-fill me-2"></i>System Overview</h5>
+            </div>
+            <div class="card-body-custom">
+                <p class="text-muted mb-4">Monitor system performance and user engagement metrics.</p>
+                <div class="row text-center">
+                    <div class="col-6">
+                        <h4 class="text-success">95%</h4>
+                        <small class="text-muted">Response Rate</small>
+                    </div>
+                    <div class="col-6">
+                        <h4 class="text-info">4.2/5</h4>
+                        <small class="text-muted">Satisfaction</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

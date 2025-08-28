@@ -118,34 +118,52 @@ class CourseForm(forms.ModelForm):
 
 
 class LecturerSignupForm(forms.ModelForm):
-    username = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control'}))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+    # --- Personal Information ---
+    first_name = forms.CharField(
+        max_length=30, 
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'})
+    )
+    last_name = forms.CharField(
+        max_length=30, 
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'})
+    )
+
+    # --- Account Credentials ---
+    username = forms.CharField(
+        max_length=150, 
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'})
+    )
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email Address'})
+    )
+
+    # Lecturer Specific Details
+    
+    title = forms.CharField(
+        max_length=100, 
+        required=False, # Make it clear this field is optional
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g., Professor, Dr., Mr., Ms.'})
+    )
+    department = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Department'})
+    )
+    
+    # --- Password Fields ---
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'})
+    )
     password_confirm = forms.CharField(
         label="Confirm Password",
-        widget=forms.PasswordInput(attrs={'class': 'form-control'})
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirm Password'})
     )
-    first_name = forms.CharField(max_length=30, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    last_name = forms.CharField(max_length=30, widget=forms.TextInput(attrs={'class': 'form-control'}))
 
     class Meta:
         model = Lecturer
+        # These fields from the Lecturer model will be handled by the form.
         fields = ['department', 'title']
-        widgets = {
-            'department': forms.TextInput(attrs={'class': 'form-control'}),
-            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g., Professor, Dr., Mr., Ms.'}),
-        }
 
-    def clean(self):
-        cleaned_data = super().clean()
-        password = cleaned_data.get('password')
-        password_confirm = cleaned_data.get('password_confirm')
-
-        if password and password_confirm and password != password_confirm:
-            raise ValidationError("Passwords don't match")
-
-        return cleaned_data
-
+    # Your validation and save methods are already correct and need no changes.
     def clean_username(self):
         username = self.cleaned_data['username']
         if User.objects.filter(username=username).exists():
@@ -157,6 +175,16 @@ class LecturerSignupForm(forms.ModelForm):
         if User.objects.filter(email=email).exists():
             raise ValidationError("This email is already registered.")
         return email
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get('password')
+        password_confirm = cleaned_data.get('password_confirm')
+
+        if password and password_confirm and password != password_confirm:
+            raise ValidationError("Passwords don't match")
+
+        return cleaned_data
 
     def save(self, commit=True):
         user = User.objects.create_user(
@@ -171,7 +199,6 @@ class LecturerSignupForm(forms.ModelForm):
         if commit:
             lecturer.save()
         return user
-
 
 class StudentRegistrationForm(UserCreationForm):
     first_name = forms.CharField(

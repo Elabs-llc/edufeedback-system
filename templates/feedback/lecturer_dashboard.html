@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% block title %}Lecturer Dashboard - EduFeedback System{% endblock %}
+
+{% block content %}
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="card-custom" data-aos="zoom-in">
+            <div class="card-body-custom text-center">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <div class="mb-3">
+                            <span class="badge {{ role_badge_class }} fs-6 px-3 py-2">
+                                <i class="bi bi-mortarboard me-2"></i> {{ user_role }}
+                            </span>
+                        </div>
+                        <h1 class="display-4 fw-bold mb-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                            Welcome Back, {{ user.get_full_name|default:user.username }}! 
+                        </h1>
+                        <p class="lead text-muted mb-4">
+                            Track student feedback and enhance your teaching effectiveness.
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="position-relative">
+                            <i class="bi bi-mortarboard-fill" style="font-size: 8rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; opacity: 0.1;"></i>
+                            <div class="position-absolute top-50 start-50 translate-middle">
+                                <div class="bg-white rounded-circle p-4 shadow-lg">
+                                    <i class="bi bi-mortarboard-fill" style="font-size: 3rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-5">
+    <div class="col-md-4 mb-4" data-aos="flip-left" data-aos-delay="100">
+        <div class="card-custom h-100">
+            <div class="card-body-custom text-center">
+                <div class="mb-3">
+                    <div class="bg-primary bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                        <i class="bi bi-journal-bookmark-fill text-white" style="font-size: 1.5rem;"></i>
+                    </div>
+                </div>
+                <h3 class="fw-bold text-primary">{{ my_courses_count }}</h3>
+                <p class="text-muted mb-0">My Courses</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4" data-aos="flip-left" data-aos-delay="200">
+        <div class="card-custom h-100">
+            <div class="card-body-custom text-center">
+                <div class="mb-3">
+                    <div class="bg-success bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                        <i class="bi bi-people-fill text-white" style="font-size: 1.5rem;"></i>
+                    </div>
+                </div>
+                <h3 class="fw-bold text-success">{{ total_students }}</h3>
+                <p class="text-muted mb-0">Total Students</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4" data-aos="flip-left" data-aos-delay="300">
+        <div class="card-custom h-100">
+            <div class="card-body-custom text-center">
+                <div class="mb-3">
+                    <div class="bg-info bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                        <i class="bi bi-chat-heart-fill text-white" style="font-size: 1.5rem;"></i>
+                    </div>
+                </div>
+                <h3 class="fw-bold text-info">{{ new_feedback }}</h3>
+                <p class="text-muted mb-0">Total Feedback</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6 mb-4" data-aos="fade-right">
+        <div class="card-custom h-100">
+            <div class="card-header-custom">
+                <h5 class="mb-0"><i class="bi bi-graph-up-arrow me-2"></i>Feedback Analytics</h5>
+            </div>
+            <div class="card-body-custom">
+                <p class="text-muted mb-4">Access detailed reports and insights about your teaching performance.</p>
+                <div class="d-grid gap-3">
+                    <a href="{% url 'lecturer_report' %}" class="btn btn-success-custom btn-custom">
+                        <i class="bi bi-bar-chart-fill me-2"></i>View Detailed Reports
+                    </a>
+                    <div class="btn-group w-100" role="group">
+                        <a href="{% url 'export_feedback_csv' %}" class="btn btn-outline-success">
+                            <i class="bi bi-file-earmark-spreadsheet me-1"></i>CSV
+                        </a>
+                        <a href="{% url 'export_feedback_pdf' %}" class="btn btn-outline-danger">
+                            <i class="bi bi-file-earmark-pdf me-1"></i>PDF
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-6 mb-4" data-aos="fade-left">
+        <div class="card-custom h-100">
+            <div class="card-header-custom" style="background: var(--warning-gradient);">
+                <h5 class="mb-0"><i class="bi bi-lightbulb-fill me-2"></i>Quick Insights</h5>
+            </div>
+            <div class="card-body-custom">
+                 <p class="text-muted">Aggregate rating from all your courses.</p>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted">Teaching Clarity</span>
+                        <span class="badge-custom bg-primary">4.3/5</span>
+                    </div>
+                    <div class="progress mt-2" style="height: 8px;">
+                        <div class="progress-bar bg-primary" style="width: 86%"></div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted">Student Engagement</span>
+                        <span class="badge-custom bg-success">4.1/5</span>
+                    </div>
+                    <div class="progress mt-2" style="height: 8px;">
+                        <div class="progress-bar bg-success" style="width: 82%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

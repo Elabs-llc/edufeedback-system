@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-m_-+pr!dll0x-_&dmuvilxn%sd@33+&cut^h!i968wxf1t*+t%')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=False, cast=bool)
+DEBUG = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='', cast=lambda v: [s.strip() for s in v.split(',') if s.strip()])
 
@@ -193,11 +193,23 @@ MESSAGE_TAGS = {
 } 
 
 # Email settings for development (prints emails to console)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 # Email settings for production
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'brainzsnr@gmail.com'  # Your Gmail address
-EMAIL_HOST_PASSWORD = 'qzhm cebq tppr ggfg'  # App Password, not your Gmail password
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'brainzsnr@gmail.com'  # Your Gmail address
+# EMAIL_HOST_PASSWORD = 'qzhm cebq tppr ggfg'  # App Password, not your Gmail password
+# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+# --- SENDGRID EMAIL CONFIGURATION ---
+# EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
+# SENDGRID_API_KEY = "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"
+
+# # This setting sends real emails even when DEBUG=True
+# SENDGRID_SANDBOX_MODE_IN_DEBUG = False
+
+# # This should be the email you just verified in Step 3
+# DEFAULT_FROM_EMAIL = "brainzsnr@gmail.com"

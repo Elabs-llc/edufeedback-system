@@ -55,9 +55,9 @@ def get_user_role(user):
     elif user.is_staff:
         return "Administrator"
     elif hasattr(user, 'lecturer'):
-        return "Lecturer"
+        return "Lecturer" 
     else:
-        return "Student"
+        return "Student" 
 
 def get_user_role_badge_class(user):
     """Get Bootstrap badge class for user role"""
@@ -176,53 +176,63 @@ def lecturer_report(request):
         'role_badge_class': get_user_role_badge_class(request.user),
     }
     
-    return render(request, 'lecturer_report.html', context)
+    return render(request, 'feedback/lecturer_report.html', context)
+
+
 
 
 @login_required
 def dashboard(request):
     user = request.user
-    is_lecturer = hasattr(user, 'lecturer')
     
     # Get user role information
     user_role = get_user_role(user)
     role_badge_class = get_user_role_badge_class(user)
     
-    # Calculate statistics based on user role
+    # Base context for all users
     context = {
-        'is_lecturer': is_lecturer,
         'user_role': user_role,
         'role_badge_class': role_badge_class
     }
     
     if user.is_staff:
-        # Admin statistics
+        # Admin statistics logic...
         all_feedback = Feedback.objects.all()
         total_ratings = 0
-        count = 0
-        for feedback in all_feedback:
-            total_ratings += (feedback.clarity_rating + feedback.engagement_rating + feedback.effectiveness_rating) / 3
-            count += 1
-        avg_rating = total_ratings / count if count > 0 else 0
-        
+        count = all_feedback.count() # More efficient way to get count
+        if count > 0:
+            for feedback in all_feedback:
+                total_ratings += (feedback.clarity_rating + feedback.engagement_rating + feedback.effectiveness_rating) / 3
+            avg_rating = total_ratings / count
+        else:
+            avg_rating = 0
+
         context.update({
             'total_users': User.objects.count(),
             'active_courses': Course.objects.count(),
-            'total_feedback': all_feedback.count(),
+            'total_feedback': count,
             'avg_rating': round(avg_rating, 1)
         })
-    elif is_lecturer:
-        # Lecturer statistics
+        return render(request, 'feedback/admin_dashboard.html', context)
+
+    elif hasattr(user, 'lecturer'):
+        # --- FIX IS HERE ---
+        # First, get the courses for the current lecturer. This line was missing.
         lecturer_courses = user.lecturer.courses.all()
+        
+        # Now you can use the 'lecturer_courses' variable
         lecturer_feedback = Feedback.objects.filter(course__in=lecturer_courses)
         
         context.update({
             'my_courses_count': lecturer_courses.count(),
-            'total_students': sum(course.students.count() for course in lecturer_courses),
+            # Calculate total students more efficiently
+            'total_students': User.objects.filter(enrolled_courses__in=lecturer_courses).distinct().count(),
             'new_feedback': lecturer_feedback.count()
         })
+        return render(request, 'feedback/lecturer_dashboard.html', context)
+
     else:
-        # Student statistics
+        # Student statistics logic...
         enrolled_courses = user.enrolled_courses.all()
         submitted_feedback = Feedback.objects.filter(student=user)
         
@@ -231,9 +241,59 @@ def dashboard(request):
             'feedback_submitted': submitted_feedback.count(),
             'pending_feedback': enrolled_courses.count() - submitted_feedback.count()
         })
+        return render(request, 'feedback/student_dashboard.html', context)
+# @login_required
+# def dashboard(request):
+#     user = request.user
     
-    return render(request, 'feedback/dashboard.html', context)
+    
+#     # Get user role information
+#     user_role = get_user_role(user)
+#     role_badge_class = get_user_role_badge_class(user)
+    
+#     # Calculate statistics based on user role
+#     context = {
+#         'user_role': user_role,
+#         'role_badge_class': role_badge_class
+#     }
+    
+#     if user.is_staff:
+#         all_feedback = Feedback.objects.all()
+#         total_ratings = 0
+#         count = 0
+#         for feedback in all_feedback:
+#             total_ratings += (feedback.clarity_rating + feedback.engagement_rating + feedback.effectiveness_rating) / 3
+#             count += 1
+#         avg_rating = total_ratings / count if count > 0 else 0
 
+#         context.update({
+#             'total_users': User.objects.count(),
+#             'active_courses': Course.objects.count(),
+#             'total_feedback': all_feedback.count(),
+#             'avg_rating': round(avg_rating, 1)
+#         })
+#         return render(request, 'feedback/admin_dashboard.html', context)
+#     elif hasattr(user, 'lecturer'):
+#         # Lecturer statistics
+#         lecturer_feedback = Feedback.objects.filter(course__in=lecturer_courses)
+        
+#         context.update({
+#             'my_courses_count': lecturer_courses.count(),
+#             'total_students': sum(course.students.count() for course in lecturer_courses),
+#             'new_feedback': lecturer_feedback.count()
+#         })
+#         return render(request, 'feedback/lecturer_dashboard.html', context)
+#     else:
+#         enrolled_courses = user.enrolled_courses.all()
+#         submitted_feedback = Feedback.objects.filter(student=user)
+        
+#         context.update({
+#             'enrolled_courses_count': enrolled_courses.count(),
+#             'feedback_submitted': submitted_feedback.count(),
+#             'pending_feedback': enrolled_courses.count() - submitted_feedback.count()
+#         })
+#         return render(request, 'feedback/student_dashboard.html', context)
+    
 
 def register_student(request):
     if request.method == 'POST':
@@ -380,6 +440,7 @@ def export_feedback_pdf(request):
     return response
 
 
+# feedback/views.py
 
 def lecturer_signup(request):
     if request.user.is_authenticated:
@@ -390,13 +451,19 @@ def lecturer_signup(request):
         form = LecturerSignupForm(request.POST)
         if form.is_valid():
             try:
-                user = form.save(commit=False)
-                user.is_active = False  # Deactivate until OTP verified
-                user.save()
+                # --- THIS IS THE FIX ---
+                # 1. Call form.save() without commit=False.
+                # This saves both the User and the Lecturer to the database.
+                user = form.save()
 
+                # 2. Deactivate the user for OTP verification.
+                user.is_active = False
+                user.save() # Save the change.
+
+                # 3. Proceed with sending the OTP as before.
                 try:
                     generate_and_send_otp(user)
-                    request.session['pending_user_id'] = user.id  # store in session
+                    request.session['pending_user_id'] = user.id
                     messages.success(request, "Lecturer account created. Please check your email for the OTP.")
                     return redirect('verify_otp')
                 except Exception as e:
@@ -410,12 +477,35 @@ def lecturer_signup(request):
 
     return render(request, 'registration/signup_lecturer.html', {'form': form})
 
+# def lecturer_signup(request):
+#     if request.user.is_authenticated:
+#         messages.info(request, "You are already logged in.")
+#         return redirect('dashboard')
 
-@login_required
-def lecturer_dashboard(request):
-    print(f"User in lecturer_dashboard: {request.user}")
-    print(f"Has lecturer attribute: {hasattr(request.user, 'lecturer')}")
-    return render(request, 'dashboard/lecturer_dashboard.html')
+#     if request.method == 'POST':
+#         form = LecturerSignupForm(request.POST)
+#         if form.is_valid():
+#             try:
+#                 user = form.save(commit=False)
+#                 user.is_active = False  # Deactivate until OTP verified
+#                 user.save()
+
+#                 try:
+#                     generate_and_send_otp(user)
+#                     request.session['pending_user_id'] = user.id  # store in session
+#                     messages.success(request, "Lecturer account created. Please check your email for the OTP.")
+#                     return redirect('verify_otp')
+#                 except Exception as e:
+#                     messages.error(request, f"Could not send OTP email: {str(e)}")
+#                     user.delete()  # clean up if email fails
+
+#             except IntegrityError:
+#                 form.add_error('username', 'This username is already taken.')
+#     else:
+#         form = LecturerSignupForm()
+
+#     return render(request, 'registration/signup_lecturer.html', {'form': form})
+
 
 @login_required
 def course_list(request):
@@ -584,9 +674,9 @@ def login_view(request):
                 messages.error(request, "Your account is not activated. Please verify your email.")
                 return redirect('verify_otp')  # send to OTP page
             login(request, user)
-            return redirect('/')  # LOGIN_REDIRECT_URL
+            return redirect('dashboard')  # Redirect to dashboard after login
         else:
-            messages.error(request, "Invalid username or password.")
+            messages.error(request, "Invalid username o r password.")
     else:
         form = AuthenticationForm()
     

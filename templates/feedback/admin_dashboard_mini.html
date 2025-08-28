@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Admin Dashboard</h1>
+    
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">System Statistics</h5>
+                    <p>Total Users: {{ total_users }}</p>
+                    <p>Active Courses: {{ active_courses }}</p>
+                    <p>Total Feedback: {{ total_feedback }}</p>
+                    <p>Average Rating: {{ avg_rating }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

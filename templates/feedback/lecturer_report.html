@@ -1,0 +1,594 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Feedback Analytics - EduFeedback System{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row mb-4" data-aos="fade-down">
+        <div class="col">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+                <div>
+                    <div class="mb-3">
+                        <span class="badge {{ role_badge_class|default:'bg-info' }} fs-6">
+                            <i class="bi bi-mortarboard me-1"></i>{{ user_role|default:'Lecturer' }}
+                        </span>
+                    </div>
+                    <h1 class="display-6 fw-bold mb-2" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+                        <i class="bi bi-bar-chart-line-fill me-3"></i>Feedback Analytics Dashboard
+                    </h1>
+                    <p class="text-muted">Comprehensive insights into your teaching performance and student engagement</p>
+                </div>
+                {% if report_data %}
+                <div class="mt-3 mt-md-0">
+                    <div class="btn-group" role="group">
+                        <a href="{% url 'export_feedback_csv' %}" class="btn btn-success-custom">
+                            <i class="bi bi-file-earmark-spreadsheet-fill me-2"></i>Export CSV
+                        </a>
+                        <a href="{% url 'export_feedback_pdf' %}" class="btn btn-warning-custom">
+                            <i class="bi bi-file-earmark-pdf-fill me-2"></i>Export PDF
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% if report_data %}
+        <!-- Summary Statistics Cards -->
+        <div class="row mb-5">
+            <div class="col-xl-3 col-md-6 mb-4" data-aos="flip-left" data-aos-delay="100">
+                <div class="card-custom h-100">
+                    <div class="card-body-custom text-center">
+                        <div class="mb-3">
+                            <div class="bg-primary bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
+                                <i class="bi bi-journal-bookmark-fill text-white" style="font-size: 1.8rem;"></i>
+                            </div>
+                        </div>
+                        <h2 class="fw-bold text-primary mb-1">{{ total_courses }}</h2>
+                        <p class="text-muted mb-0">Total Courses</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-xl-3 col-md-6 mb-4" data-aos="flip-left" data-aos-delay="200">
+                <div class="card-custom h-100">
+                    <div class="card-body-custom text-center">
+                        <div class="mb-3">
+                            <div class="bg-success bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
+                                <i class="bi bi-chat-heart-fill text-white" style="font-size: 1.8rem;"></i>
+                            </div>
+                        </div>
+                        <h2 class="fw-bold text-success mb-1">{{ total_feedback }}</h2>
+                        <p class="text-muted mb-0">Total Feedback</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-xl-3 col-md-6 mb-4" data-aos="flip-left" data-aos-delay="300">
+                <div class="card-custom h-100">
+                    <div class="card-body-custom text-center">
+                        <div class="mb-3">
+                            <div class="bg-info bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
+                                <i class="bi bi-star-fill text-white" style="font-size: 1.8rem;"></i>
+                            </div>
+                        </div>
+                        <h2 class="fw-bold text-info mb-1">{{ overall_rating }}</h2>
+                        <p class="text-muted mb-0">Overall Rating</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-xl-3 col-md-6 mb-4" data-aos="flip-left" data-aos-delay="400">
+                <div class="card-custom h-100">
+                    <div class="card-body-custom text-center">
+                        <div class="mb-3">
+                            <div class="bg-warning bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
+                                <i class="bi bi-graph-up-arrow text-white" style="font-size: 1.8rem;"></i>
+                            </div>
+                        </div>
+                        <h2 class="fw-bold text-warning mb-1">{{ active_courses }}</h2>
+                        <p class="text-muted mb-0">Active Courses</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Report Table -->
+        <div class="card-custom mb-5" data-aos="fade-up">
+            <div class="card-header-custom">
+                <h4 class="mb-0"><i class="bi bi-table me-2"></i>Detailed Course Performance</h4>
+            </div>
+            <div class="card-body-custom">
+                <div class="table-responsive">
+                    <table class="table table-custom table-hover">
+                        <thead>
+                            <tr>
+                                <th class="border-0">Course</th>
+                                <th class="border-0 text-center">Responses</th>
+                                <th class="border-0 text-center">Clarity</th>
+                                <th class="border-0 text-center">Engagement</th>
+                                <th class="border-0 text-center">Effectiveness</th>
+                                <th class="border-0 text-center">Overall</th>
+                                <th class="border-0 text-center">Performance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in report_data %}
+                                <tr data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:100 }}">
+                                    <td>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">{{ item.course.name }}</h6>
+                                            <small class="text-muted">{{ item.course.code }}</small>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge-custom bg-secondary">{{ item.count }}</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="d-flex flex-column align-items-center">
+                                            <span class="badge-custom {% if item.avg_clarity >= 4 %}bg-success{% elif item.avg_clarity >= 3 %}bg-warning{% else %}bg-danger{% endif %} mb-1">
+                                                {{ item.avg_clarity|floatformat:1 }}
+                                            </span>
+                                            <div class="progress" style="width: 60px; height: 4px;">
+                                                <div class="progress-bar {% if item.avg_clarity >= 4 %}bg-success{% elif item.avg_clarity >= 3 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                                     style="width: {{ item.clarity_percentage }}%"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="d-flex flex-column align-items-center">
+                                            <span class="badge-custom {% if item.avg_engagement >= 4 %}bg-success{% elif item.avg_engagement >= 3 %}bg-warning{% else %}bg-danger{% endif %} mb-1">
+                                                {{ item.avg_engagement|floatformat:1 }}
+                                            </span>
+                                            <div class="progress" style="width: 60px; height: 4px;">
+                                                <div class="progress-bar {% if item.avg_engagement >= 4 %}bg-success{% elif item.avg_engagement >= 3 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                                     style="width: {{ item.engagement_percentage }}%"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="d-flex flex-column align-items-center">
+                                            <span class="badge-custom {% if item.avg_effectiveness >= 4 %}bg-success{% elif item.avg_effectiveness >= 3 %}bg-warning{% else %}bg-danger{% endif %} mb-1">
+                                                {{ item.avg_effectiveness|floatformat:1 }}
+                                            </span>
+                                            <div class="progress" style="width: 60px; height: 4px;">
+                                                <div class="progress-bar {% if item.avg_effectiveness >= 4 %}bg-success{% elif item.avg_effectiveness >= 3 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                                     style="width: {{ item.effectiveness_percentage }}%"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge-custom {% if item.overall_avg >= 4 %}bg-success{% elif item.overall_avg >= 3 %}bg-warning{% else %}bg-danger{% endif %}">
+                                            {{ item.overall_avg|floatformat:1 }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        {% if item.overall_avg >= 4.5 %}
+                                            <i class="bi bi-emoji-smile-fill text-success" title="Excellent"></i>
+                                        {% elif item.overall_avg >= 4 %}
+                                            <i class="bi bi-emoji-smile text-success" title="Very Good"></i>
+                                        {% elif item.overall_avg >= 3 %}
+                                            <i class="bi bi-emoji-neutral text-warning" title="Good"></i>
+                                        {% elif item.overall_avg >= 2 %}
+                                            <i class="bi bi-emoji-frown text-warning" title="Needs Improvement"></i>
+                                        {% else %}
+                                            <i class="bi bi-emoji-frown-fill text-danger" title="Poor"></i>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Chart Section -->
+        <div class="card-custom" data-aos="fade-up" data-aos-delay="200">
+            <div class="card-header-custom">
+                <h4 class="mb-0"><i class="bi bi-graph-up me-2"></i>Visual Performance Overview</h4>
+            </div>
+            <div class="card-body-custom">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <canvas id="feedbackChart" style="max-height: 400px;"></canvas>
+                    </div>
+                    <div class="col-lg-4">
+                        <h6 class="fw-bold mb-3">Performance Insights</h6>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-muted">Teaching Excellence</span>
+                                <span class="badge-custom bg-primary">85%</span>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-primary" style="width: 85%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-muted">Student Satisfaction</span>
+                                <span class="badge-custom bg-success">92%</span>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-success" style="width: 92%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-muted">Course Effectiveness</span>
+                                <span class="badge-custom bg-info">88%</span>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-info" style="width: 88%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 p-3 bg-light rounded">
+                            <h6 class="fw-bold text-success"><i class="bi bi-lightbulb-fill me-2"></i>Key Insights</h6>
+                            <ul class="list-unstyled mb-0 small">
+                                <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Strong overall performance across all metrics</li>
+                                <li class="mb-2"><i class="bi bi-arrow-up text-primary me-2"></i>Engagement scores show consistent improvement</li>
+                                <li><i class="bi bi-star text-warning me-2"></i>Maintaining excellent student satisfaction</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Feedback Section with Comments -->
+        <div class="card-custom mt-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="card-header-custom">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="bi bi-chat-quote-fill me-2"></i>Student Feedback & Comments</h4>
+                    <div class="d-flex gap-2">
+                        <span class="badge bg-primary">{{ total_feedback }} Total Feedback</span>
+                        <span class="badge bg-success" id="comments-count">Loading...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body-custom">
+                {% for item in report_data %}
+                    {% if item.feedbacks %}
+                        <div class="mb-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-primary bg-gradient rounded-circle p-2 me-3">
+                                    <i class="bi bi-book text-white"></i>
+                                </div>
+                                <div>
+                                    <h5 class="fw-bold mb-1">{{ item.course.name }}</h5>
+                                    <small class="text-muted">{{ item.course.code }} • {{ item.feedbacks|length }} feedback(s)</small>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                {% for feedback in item.feedbacks %}
+                                    <div class="col-lg-6 mb-3">
+                                        <div class="border rounded p-3 h-100 feedback-card feedback-comment-card" style="background: #f8f9fa;">
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <small class="text-muted">
+                                                    <i class="bi bi-person-circle me-1"></i>
+                                                    Anonymous Student
+                                                </small>
+                                                <small class="text-muted">{{ feedback.submitted_at|date:"M d, Y" }}</small>
+                                            </div>
+                                            
+                                            <!-- Rating Summary -->
+                                            <div class="row text-center mb-3">
+                                                <div class="col-4">
+                                                    <div class="badge bg-primary rating-badge mb-1">{{ feedback.clarity_rating }}/5</div>
+                                                    <div class="small text-muted">Clarity</div>
+                                                </div>
+                                                <div class="col-4">
+                                                    <div class="badge bg-success rating-badge mb-1">{{ feedback.engagement_rating }}/5</div>
+                                                    <div class="small text-muted">Engagement</div>
+                                                </div>
+                                                <div class="col-4">
+                                                    <div class="badge bg-info rating-badge mb-1">{{ feedback.effectiveness_rating }}/5</div>
+                                                    <div class="small text-muted">Effectiveness</div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Comments Section -->
+                                            {% if feedback.comments %}
+                                                <div class="mt-3">
+                                                    <div class="d-flex align-items-center mb-2">
+                                                        <i class="bi bi-chat-left-quote text-primary me-2"></i>
+                                                        <strong class="small text-primary">Student Comments:</strong>
+                                                    </div>
+                                                    <div class="bg-white border-start border-primary border-3 p-3 rounded">
+                                                        <p class="mb-0 small comment-text">{{ feedback.comments }}</p>
+                                                    </div>
+                                                </div>
+                                            {% else %}
+                                                <div class="mt-3 text-center">
+                                                    <small class="text-muted fst-italic">
+                                                        <i class="bi bi-chat-square-dots me-1"></i>
+                                                        No written comments provided
+                                                    </small>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        {% if not forloop.last %}
+                            <hr class="my-4">
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+                
+                {% if not report_data or not report_data.0.feedbacks %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-chat-square text-muted" style="font-size: 3rem; opacity: 0.3;"></i>
+                        <h6 class="text-muted mt-3">No detailed feedback available yet</h6>
+                        <p class="text-muted small">Student feedback and comments will appear here once submitted.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+    {% else %}
+        <!-- No Data Message -->
+        <div class="card-custom" data-aos="zoom-in">
+            <div class="card-body-custom text-center py-5">
+                <div class="mb-4">
+                    <i class="bi bi-clipboard-data text-muted" style="font-size: 5rem; opacity: 0.3;"></i>
+                </div>
+                <h3 class="fw-bold text-muted mb-3">No Feedback Data Available</h3>
+                <p class="lead text-muted mb-4">You haven't received any student feedback yet. Feedback will appear here once students start submitting evaluations for your courses.</p>
+                <div class="d-flex flex-column flex-md-row gap-3 justify-content-center">
+                    <a href="{% url 'dashboard' %}" class="btn btn-primary-custom btn-custom">
+                        <i class="bi bi-house-fill me-2"></i>Back to Dashboard
+                    </a>
+                    <!-- <a href="{% url 'register_course' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-plus-circle me-2"></i>Add New Course
+                    </a> -->
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Chart.js and Custom Chart Script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    {% if report_data %}
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('feedbackChart').getContext('2d');
+
+        const labels = [
+            {% for item in report_data %}
+                "{{ item.course.code }}"{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        ];
+
+        const clarityData = [
+            {% for item in report_data %}
+                {{ item.avg_clarity }}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        ];
+
+        const engagementData = [
+            {% for item in report_data %}
+                {{ item.avg_engagement }}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        ];
+
+        const effectivenessData = [
+            {% for item in report_data %}
+                {{ item.avg_effectiveness }}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        ];
+
+        const chartData = {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Teaching Clarity',
+                    backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                    borderColor: 'rgba(102, 126, 234, 1)',
+                    borderWidth: 2,
+                    data: clarityData,
+                    borderRadius: 8,
+                },
+                {
+                    label: 'Student Engagement',
+                    backgroundColor: 'rgba(34, 197, 94, 0.8)',
+                    borderColor: 'rgba(34, 197, 94, 1)',
+                    borderWidth: 2,
+                    data: engagementData,
+                    borderRadius: 8,
+                },
+                {
+                    label: 'Course Effectiveness',
+                    backgroundColor: 'rgba(14, 165, 233, 0.8)',
+                    borderColor: 'rgba(14, 165, 233, 1)',
+                    borderWidth: 2,
+                    data: effectivenessData,
+                    borderRadius: 8,
+                }
+            ]
+        };
+
+        const config = {
+            type: 'bar',
+            data: chartData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 20,
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: 'white',
+                        bodyColor: 'white',
+                        borderColor: 'rgba(255, 255, 255, 0.2)',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        displayColors: true,
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.parsed.y.toFixed(1) + '/5';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 5,
+                        ticks: {
+                            stepSize: 1,
+                            font: {
+                                size: 11
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Rating (1-5 Scale)',
+                            font: {
+                                size: 12,
+                                weight: '600'
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            font: {
+                                size: 11
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Courses',
+                            font: {
+                                size: 12,
+                                weight: '600'
+                            }
+                        },
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                animation: {
+                    duration: 2000,
+                    easing: 'easeInOutQuart'
+                }
+            }
+        };
+
+        new Chart(ctx, config);
+    });
+    {% endif %}
+    
+    // Add interactive features for feedback comments
+    document.addEventListener('DOMContentLoaded', function() {
+        // Count comments and update badge
+        const commentElements = document.querySelectorAll('.comment-text');
+        let commentsCount = 0;
+        
+        commentElements.forEach(function(element) {
+            if (element.textContent.trim() && 
+                element.textContent.trim() !== 'No additional comments provided.' &&
+                element.textContent.trim() !== '') {
+                commentsCount++;
+            }
+        });
+        
+        const commentsBadge = document.getElementById('comments-count');
+        if (commentsBadge) {
+            commentsBadge.textContent = commentsCount + ' With Comments';
+        }
+        
+        // Add expand/collapse functionality for long comments
+        const commentCards = document.querySelectorAll('.feedback-comment-card');
+        
+        commentCards.forEach(card => {
+            const commentText = card.querySelector('.comment-text');
+            if (commentText && commentText.textContent.length > 150) {
+                const fullText = commentText.textContent;
+                const shortText = fullText.substring(0, 150) + '...';
+                
+                commentText.textContent = shortText;
+                
+                const expandBtn = document.createElement('button');
+                expandBtn.className = 'btn btn-link btn-sm p-0 text-decoration-none';
+                expandBtn.innerHTML = '<small>Read more</small>';
+                expandBtn.style.fontSize = '0.75rem';
+                
+                let isExpanded = false;
+                expandBtn.addEventListener('click', function() {
+                    if (isExpanded) {
+                        commentText.textContent = shortText;
+                        expandBtn.innerHTML = '<small>Read more</small>';
+                    } else {
+                        commentText.textContent = fullText;
+                        expandBtn.innerHTML = '<small>Read less</small>';
+                    }
+                    isExpanded = !isExpanded;
+                });
+                
+                commentText.parentNode.appendChild(expandBtn);
+            }
+        });
+        
+        // Add hover effects to feedback cards
+        const feedbackCards = document.querySelectorAll('.feedback-card');
+        feedbackCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px)';
+                this.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+                this.style.transition = 'all 0.3s ease';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+            });
+        });
+    });
+</script>
+
+<style>
+    .feedback-card {
+        transition: all 0.3s ease;
+        border: 1px solid #e9ecef !important;
+    }
+    
+    .feedback-card:hover {
+        border-color: #007bff !important;
+    }
+    
+    .comment-text {
+        line-height: 1.5;
+        word-wrap: break-word;
+    }
+    
+    .rating-badge {
+        font-weight: 600;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.375rem;
+    }
+</style>
+</script>
+{% endblock %}

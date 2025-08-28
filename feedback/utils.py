@@ -1,4 +1,5 @@
-# utils.py
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
 import secrets
 import logging
 from datetime import timedelta
