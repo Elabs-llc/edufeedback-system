@@ -193,16 +193,16 @@ MESSAGE_TAGS = {
 } 
 
 # Email settings for development (prints emails to console)
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Email settings for production
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = 'brainzsnr@gmail.com'  # Your Gmail address
-# EMAIL_HOST_PASSWORD = 'qzhm cebq tppr ggfg'  # App Password, not your Gmail password
-# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'brainzsnr@gmail.com'  # Your Gmail address
+EMAIL_HOST_PASSWORD = 'qzhm cebq tppr ggfg'  # App Password, not your Gmail password
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # --- SENDGRID EMAIL CONFIGURATION ---
 # EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
