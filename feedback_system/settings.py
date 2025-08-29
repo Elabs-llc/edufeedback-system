@@ -204,12 +204,6 @@ EMAIL_HOST_USER = 'brainzsnr@gmail.com'  # Your Gmail address
 EMAIL_HOST_PASSWORD = 'qzhm cebq tppr ggfg'  # App Password, not your Gmail password
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-# --- SENDGRID EMAIL CONFIGURATION ---
-# EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
-# SENDGRID_API_KEY = "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"
-
-# # This setting sends real emails even when DEBUG=True
-# SENDGRID_SANDBOX_MODE_IN_DEBUG = False
 
 # # This should be the email you just verified in Step 3
-# DEFAULT_FROM_EMAIL = "brainzsnr@gmail.com"
+DEFAULT_FROM_EMAIL = "brainzsnr@gmail.com"
