@@ -1,2 +1,1 @@
-web: gunicorn feedback_system.wsgi --log-file -
-release: python manage.py migrate
+web: python manage.py migrate && gunicorn feedback_system.wsgi --log-file -
