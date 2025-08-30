@@ -29,7 +29,9 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-m_-+pr!dll0x-_&dmuvil
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='', cast=lambda v: [s.strip() for s in v.split(',') if s.strip()])
+# ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='', cast=lambda v: [s.strip() for s in v.split(',') if s.strip()])
+
+ALLOWED_HOSTS = ['web-production-0ebde.up.railway.app']
 
 
 # Application definition
